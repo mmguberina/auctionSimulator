@@ -6,4 +6,7 @@ from strategy_updating_algorithms import *
 
 
 if __name__ == "__main__":
+    """ 
+    write the actual program here
+    """
     pass
