@@ -15,12 +15,10 @@ from strategy_updating_algorithms import *
 # same form as bid curve
 if __name__ == "__main__":
     n_of_demand_bids = 5
-    demand_curve = [[n_of_demand_bids - i, i] for i in range n_of_demand_bids]
+    demand_curve = [[n_of_demand_bids - i, i] for i in range(n_of_demand_bids)]
 
     n_agents = 5
     agents = []
     for i in range(n_agents):
         agents.append(Agent("all_the_same"))
-
-    
 

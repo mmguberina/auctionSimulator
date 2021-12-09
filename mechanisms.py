@@ -19,6 +19,9 @@ def uniformPricing(model_grand_coalition, x_grand_coalition, bids_demand, bids_s
     """
     alocate payments based on the calculated price
     """
+    demand=bids_demand.index.unique(0).values #set of buyer agents
+    supply=bids_supply.index.unique(0).values #set of seller agents
+
     uniform_price_clearing_results = pd.DataFrame(columns=["unifrom_price_SEKperkW"])
     return uniform_price_clearing_results
 

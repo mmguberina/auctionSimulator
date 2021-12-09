@@ -54,23 +54,12 @@ def clearing_results_processing_multibid(m,x,bids_demand,bids_supply,path_cleare
                 bids_supply_sorted_t.loc \
                     [bid_idx, "q_aggregated"] \
                     = bids_supply_sorted_t.loc [bid_idx, "q"]
-                # plt.plot([0,bid.loc[0,'q']],[bid.loc[0,'u'],bid.loc[0,'u']])
             else:
                 bids_supply_sorted_t.loc \
                     [bid_idx, "q_aggregated"] \
                     = bids_supply_sorted_t.iloc [bids_supply_sorted_t.index.get_loc(bid_idx)-1, 4] \
                       + bids_supply_sorted_t.loc [bid_idx, "q"]
 
-        date = bids_demand_sorted_t.iloc[0,0].date()
-        #plotting the supply-demand curve
-        plt.figure()
-        plt.title ("Demand-supply curves: %a %a" %(str(date),str(t)))
-        #adding the first point in the curves as [0,u[0]] to get the full supply/demand curves
-        plt.step(np.insert(bids_demand_sorted_t.q_aggregated.values,0,0), np.insert(bids_demand_sorted_t.u.values,0,bids_demand_sorted_t.u[0]), label="Demand")
-        plt.step(np.insert(bids_supply_sorted_t.q_aggregated.values,0,0), np.insert(bids_supply_sorted_t.u.values,0,bids_supply_sorted_t.u[0]), label="Supply")
-        plt.xlabel("Quantity [kW]")
-        plt.ylabel("Valuation [SEK/kW]")
-        plt.legend()
 
 
     return cleared_bids_demand, cleared_bids_supply
