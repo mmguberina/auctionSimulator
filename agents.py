@@ -6,6 +6,7 @@ class Agent:
      ================
      true_evaluation (curve)
      strategy
+     strategy_parameters
      bids_curve
 
      functions
