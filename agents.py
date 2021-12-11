@@ -1,11 +1,15 @@
 from strategies import *
 
+
 class Agent:
     """
      variables
      ================
      true_evaluation (curve)
      strategy
+     strategy_mix
+     best_strategy (For PSO)
+     (velocity might be nice for the PSO)
      strategy_parameters
      bids_curve
 
@@ -25,8 +29,15 @@ class Agent:
      strategy
      --------
      - function pointer to strategy function to be called to create a bid
+
+     strategy_mix
+     --------
+     - List of probabilities of choosing each strategy
+
+     best_strategy
+     --------
+     - Mix of strategies that gave the greatest utility that agent has had
     """
-    
 
     def __init__(self, initType):
         if initType == "all_the_same":
@@ -36,16 +47,18 @@ class Agent:
             # and a list of equal length denoting how probable each strategy should be.
             # don't forget that the probabilities must sum to 1!
             self.strategy = pureStrategy5PercentHigher
+            self.strategy_mix = [1]
             self.bids_curve = self.strategy(self.true_evaluation)
         else:
-            raise NotImplemented
-
-    
-   def updateStrategy(self):
-        """
-        update strategy parameters with PSO or something.
-        that should probably be a standalone function tho
-        """
-        pass
+            raise NotImplementedError("Not all the same not implemented")
 
 
+def updateStrategy(self):
+    """
+    update strategy parameters with PSO or something.
+    that should probably be a standalone function tho
+    --------
+    Thinking this function should be for the internal strategy updates.
+    PSO/EA takes care of agents positioning among the "pure strategies".
+    """
+    pass
