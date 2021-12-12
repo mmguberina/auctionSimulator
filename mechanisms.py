@@ -15,6 +15,38 @@ to calculate this (certainly will have to do it for shapley)
 """
 
 
+def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution):
+    sortByPrice = lambda solution : solution[1]
+    supply_quantities_cleared_sorted = sorted(supply_quantities_cleared_solution, key=sortByPrice)
+#    print(supply_quantities_cleared_sorted)
+
+    for solution in supply_quantities_cleared_sorted:
+        print(solution)
+        if solution[2] == 0:
+            uniform_price = solution[1]
+            break
+
+    price_interval_cuttoff = 0.5
+
+    demand_quantities_cleared_sorted = sorted(demand_quantities_cleared_solution, key=sortByPrice)
+    for solution in demand_quantities_cleared_solution:
+        if solution[2] == 0:
+            uniform_price = uniform_price + price_interval_cuttoff * (solution[1] - uniform_price)
+            break
+    
+    payoffs = [0] * len(agents)
+    for solution in supply_quantities_cleared_solution:
+#        print(solution)
+        payoffs[solution[3]] += uniform_price * solution[2]
+
+    for i, agent in enumerate(agents):
+        agent.payoff_history.append(payoffs[i])
+
+
+
+
+
+
 
 
 def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \

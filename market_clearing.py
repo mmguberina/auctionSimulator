@@ -175,7 +175,7 @@ def primal_multibid(bids_demand,bids_supply):
 def marketClearing(agents, demand):
 
     m = gp . Model ("CL_activation_primal_multibid")
-#    m.Params.LogToConsole = 0
+    m.Params.LogToConsole = 0
     # j: the participant
     # t: hour of the day
     # g: the grandchildren bid, or the granularities of the bids in each hour
@@ -193,8 +193,8 @@ def marketClearing(agents, demand):
     allBids = []
     for i, agent in enumerate(agents):
         for j, bid in enumerate(agent.bids_curve):
-            # now bid is [agent_index, quantity_i, price_i]
-            allBids.append([i] + bid)
+            # now bid is [quantity_i, price_i, agent_index]
+            allBids.append(bid + [i] )
             supply_quantities_cleared.append(m.addVar(name="s_" + str(i) + "_" + str(j)))
             m.addConstr(supply_quantities_cleared[-1] <= bid[0], \
                     name="qs_" + str(i) + "_" + str(j)) 
@@ -204,11 +204,6 @@ def marketClearing(agents, demand):
         m.addConstr(demand_quantities_cleared[-1] <= bid[0], \
                 name="qd_" + str(i))
 
-# NOTE: not needed now
-#    sortByPrice = lambda bid : bid[2]
-#    allBids = sorted(allBids, key=sortByPrice)
-
-
     m.addConstr(gp.quicksum(demand_quantities_cleared) \
             - gp.quicksum(supply_quantities_cleared) == 0,
             "balance_constraint")
@@ -216,7 +211,7 @@ def marketClearing(agents, demand):
     ##########----- Set objective : maximize social welfare
     obj = gp.quicksum([quantity * demand[i][1] \
         for i, quantity in enumerate(demand_quantities_cleared) ]) \
-          - gp.quicksum([quantity * allBids[i][2] \
+          - gp.quicksum([quantity * allBids[i][1] \
         for i, quantity in enumerate(supply_quantities_cleared) ])
 
     m.setObjective(obj, GRB . MAXIMIZE )
@@ -226,7 +221,11 @@ def marketClearing(agents, demand):
     demand_quantities_cleared_solution = []
 
 # NOTE FINISH
-    for var in supply_quantities_cleared:
-        supply_quantities_cleared_solution.append()
+    for i, var in enumerate(supply_quantities_cleared):
+        # = supply_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount, agent_index],...]
+        supply_quantities_cleared_solution.append(allBids[i][0:2] + [var.x] + [allBids[i][2]])
 
-    return supply_quantities_cleared, demand_quantities_cleared
+    for i, var in enumerate(demand_quantities_cleared):
+        # = deman_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount],...]
+        demand_quantities_cleared_solution.append(demand[i] + [var.x])
+    return supply_quantities_cleared_solution, demand_quantities_cleared_solution

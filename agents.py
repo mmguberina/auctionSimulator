@@ -13,6 +13,8 @@ class Agent:
      (velocity might be nice for the PSO)
      strategy_parameters
      bids_curve
+     payoff_history
+     strategy_mix_history
 
      functions
      ================
@@ -42,11 +44,19 @@ class Agent:
      best_utility
      --------
      - The top utility for updating best_strategy
+     
+     payoff_history
+     ---------------
+     - a list of every payoff ever
+
+     strategy_mix_history
+     ----------------
+     - history of strategy mixes
     """
 
     def __init__(self, initType):
         if initType == "all_the_same":
-            self.true_evaluation = [[i, i] for i in range(5)]
+            self.true_evaluation = [[i+1, i+1] for i in range(5)]
             # if you want a mixed strategy,
             # create self.strategies = [strategy1, ...]
             # and a list of equal length denoting how probable each strategy should be.
@@ -56,6 +66,8 @@ class Agent:
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
+            self.payoff_history = []
+            self.strategy_mix_history = []
         else:
             raise NotImplementedError("Not all the same not implemented")
 
