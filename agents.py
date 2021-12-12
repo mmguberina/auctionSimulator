@@ -38,6 +38,10 @@ class Agent:
      best_strategy
      --------
      - Mix of strategies that gave the greatest utility that agent has had
+
+     best_utility
+     --------
+     - The top utility for updating best_strategy
     """
 
     def __init__(self, initType):
@@ -49,6 +53,8 @@ class Agent:
             # don't forget that the probabilities must sum to 1!
             self.strategy = [pureStrategy5PercentHigher]
             self.strategy_mix = [1]
+            self.best_strategy = copy.deepcopy(self.strategy_mix)
+            self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
         else:
             raise NotImplementedError("Not all the same not implemented")

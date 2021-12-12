@@ -13,20 +13,20 @@ import numpy as np
 
 # pure strategies
 def pureStrategy5PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(truthful_bid)
+    bids_curve = copy.deepcopy(true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.05
     return bids_curve
 
 
 def pureStrategy10PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(truthful_bid)
+    bids_curve = copy.deepcopy(true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.10
     return bids_curve
 
 def pureStrategy15PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(truthful_bid)
+    bids_curve = copy.deepcopy(true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.10
     return bids_curve
