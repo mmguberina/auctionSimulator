@@ -25,14 +25,24 @@ if __name__ == "__main__":
         agents.append(Agent("all_the_same"))
 
     # Might want to move this to the runs.py file,
-    # runs_per_strategy_update = 10 # Example for simple strategies
+    runs_per_strategy_update = 10   # Example for simple strategies
                                     # (might need other criteria with more complex strategies)
     # define termination criteria
-
-    # Run until termination
+    max_epochs = 100 # Just for testing with simple termination criteria
+    epoch = 0
+    while epoch < max_epochs:
+        epoch += 1
         # Run runs_per_strategy_update times
-            # Get bids from all agents
+        for i in range(runs_per_strategy_update):
+            for a in agents:
+                a.generateBid()
             # Market clearing function
+            supply_bids = [a.bids_curve for a in agents]
+            m,x = primal_multibid(demand_curve,supply_bids)
+            #cleared_bids_demand, cleared_bids_supply = clearing_results_processing_multibid(m,x,demand_curve,supply_bids,...)
             # Payment distribution
+            #price_clearing_results = uniformPricing(m,,demand_curve,supply_bids,epoch,cleared_bids_demand,cleared_bids_supply)
             # Accumulate payments/utility
+
         # Update strategy position
+        #PSO(agents,price_clearing_results)

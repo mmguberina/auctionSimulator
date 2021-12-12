@@ -1,4 +1,5 @@
 from strategies import *
+import random
 
 
 class Agent:
@@ -46,12 +47,17 @@ class Agent:
             # create self.strategies = [strategy1, ...]
             # and a list of equal length denoting how probable each strategy should be.
             # don't forget that the probabilities must sum to 1!
-            self.strategy = pureStrategy5PercentHigher
+            self.strategy = [pureStrategy5PercentHigher]
             self.strategy_mix = [1]
-            self.bids_curve = self.strategy(self.true_evaluation)
+            self.bids_curve = self.strategy[0](self.true_evaluation)
         else:
             raise NotImplementedError("Not all the same not implemented")
 
+
+    def generateBid(self):
+        chosen_strategy = random.choices(self.strategy,weights=self.strategy_mix,k=1)
+        self.bids_curve = chosen_strategy(self.true_evaluation) #Not sure which is the nicer solution
+        #return chosen_strategy(self.true_evaluation)
 
 def updateStrategy(self):
     """

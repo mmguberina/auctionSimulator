@@ -38,7 +38,10 @@ def PSO(agents, epoch_utility):
         random_movement_vector = [random.random()*random_movement_weight for i in range(n_strategies)]
 
         #Update agent position (might want to change to update agent velocity)
-        a.strategy_mix = a.strategy_mix + swarm_best_vector + agent_best_vector + random_movement_vector
+        for i in range(n_strategies):
+            a.strategy_mix[i] = a.strategy_mix[i] + swarm_best_vector[i] + agent_best_vector[i] + random_movement_vector[i]
+        a.strategy_mix = [a.strategy_mix[i]/sum(a.strategy_mix) for i in range(n_strategies)]
+
 
 def GA():
     pass
