@@ -19,7 +19,7 @@ n_agents = 5
 agents = []
 agent_utility = []
 def test_util_func(agent):
-    return -(agent.strategy_mix[0]-3)**2 - (agent.strategy_mix[1]-2)**2
+    return -pow((agent.strategy_mix[0]-0.5),2) - pow((agent.strategy_mix[1]-0.5),2)
 
 for i in range(n_agents):
     agents.append(Agent("all_the_same"))
@@ -32,3 +32,4 @@ for i in range(20):
     agent_utility = [test_util_func(a) for a in agents]
     PSO(agents,agent_utility)
     print(max(agent_utility))
+    print(agents[agent_utility.index(max(agent_utility))].strategy_mix)
