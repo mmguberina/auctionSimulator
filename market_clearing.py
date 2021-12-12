@@ -13,7 +13,66 @@ return final price(s) and social welfare
 """
 
 
+
 def clearing_results_processing_multibid(m,x,bids_demand,bids_supply,path_cleared_bid_demand,path_cleared_bid_supply):
+
+    #-----finding the cleared bids (the ones having x!=0, i.e., x>=0)
+    cleared_bids_indices_demand = [idx for idx in bids_demand.index \
+                                   if x[idx].x != 0]
+    cleared_bids_indices_supply = [idx for idx in bids_supply.index \
+                                   if x[idx].x != 0]
+
+    cleared_bids_demand = bids_demand.loc[(cleared_bids_indices_demand)]
+    cleared_bids_demand['x'] = [x[idx].x for idx in cleared_bids_demand.index]
+    cleared_bids_demand.to_excel(path_cleared_bid_demand)
+
+    cleared_bids_supply = bids_supply.loc[(cleared_bids_indices_supply)]
+    cleared_bids_supply['x'] = [x[idx].x for idx in cleared_bids_supply.index]
+    cleared_bids_supply.to_excel(path_cleared_bid_supply)
+
+    #Set of T includes only the hours in this day that are cleared so that we don't have to plot all the unnessary plots fo
+    T = list(cleared_bids_demand.groupby(level=[1]).groups.keys()) # the set cleared of hours
+
+    for t in T:
+        #sorting the cleared bids in each hour
+        bids_demand_sorted_t = bids_demand.loc[bids_demand.groupby(level=[1]).groups[t]].sort_values(by=['u'], ascending=False)
+        bids_supply_sorted_t = bids_supply.loc[bids_supply.groupby(level=[1]).groups[t]].sort_values(by=['u'])
+
+        #aggregated the sorted bids to be able to plot a stacked line plot for the supply and demand curves
+        for bid_idx in bids_demand_sorted_t.index:
+            if bids_demand_sorted_t.index.get_loc(bid_idx) == 0:
+                bids_demand_sorted_t.loc \
+                    [bid_idx, "q_aggregated"] \
+                    = bids_demand_sorted_t.loc [bid_idx, "q"]
+            else:
+                bids_demand_sorted_t.loc \
+                    [bid_idx, "q_aggregated"] \
+                    = bids_demand_sorted_t.iloc [bids_demand_sorted_t.index.get_loc(bid_idx)-1, 4] \
+                      + bids_demand_sorted_t.loc [bid_idx, "q"]
+
+        for bid_idx in bids_supply_sorted_t.index:
+            if bids_supply_sorted_t.index.get_loc(bid_idx) == 0:
+                bids_supply_sorted_t.loc \
+                    [bid_idx, "q_aggregated"] \
+                    = bids_supply_sorted_t.loc [bid_idx, "q"]
+            else:
+                bids_supply_sorted_t.loc \
+                    [bid_idx, "q_aggregated"] \
+                    = bids_supply_sorted_t.iloc [bids_supply_sorted_t.index.get_loc(bid_idx)-1, 4] \
+                      + bids_supply_sorted_t.loc [bid_idx, "q"]
+
+
+
+    return cleared_bids_demand, cleared_bids_supply
+
+
+
+
+
+
+
+
+def marketClearingProcessing(m,x,bids_demand,bids_supply,path_cleared_bid_demand,path_cleared_bid_supply):
 
     #-----finding the cleared bids (the ones having x!=0, i.e., x>=0)
     cleared_bids_indices_demand = [idx for idx in bids_demand.index \
@@ -75,12 +134,12 @@ def primal_multibid(bids_demand,bids_supply):
     # g: the grandchildren bid, or the granularities of the bids in each hour
 
     ##########----Defining the variables
-    x = {} #how much CL is cleared from each bid x[j,c,t,g]
+    x = {} # how much CL is cleared from each bid x[j,c,t,g]
 
     for idx in bids_demand.index:
-        x[idx] = m . addVar (name ="x[%a]" %str(idx))
+        x[idx] = m.addVar(name ="x[%a]" %str(idx))
     for idx in bids_supply.index:
-        x[idx] = m . addVar (name ="x[%a]" %str(idx))
+        x[idx] = m.addVar(name ="x[%a]" %str(idx))
 
 
     #########-----Defining constraints
@@ -110,3 +169,64 @@ def primal_multibid(bids_demand,bids_supply):
     m.optimize()
 
     return m,x
+
+
+
+def marketClearing(agents, demand):
+
+    m = gp . Model ("CL_activation_primal_multibid")
+#    m.Params.LogToConsole = 0
+    # j: the participant
+    # t: hour of the day
+    # g: the grandchildren bid, or the granularities of the bids in each hour
+
+    ##########----Defining the variables
+    supply_quantities_cleared = [] #how much CL is cleared from each bid x[j,c,t,g] (supply side)
+    demand_quantities_cleared = [] #how much CL is cleared from each bid x[j,c,t,g] (demand side)
+
+    # since there are multiple sellers, their bids need to be indexed so that we 
+    # know whose bid a bid is,
+    # meaning allBids = [..., [agent_index, quantity_i, price_i],...]
+    # however, there is only 1 buyer so those bids need not be indexed, 
+    # meaning demand = [..., [quantity_i, price_i],...]
+
+    allBids = []
+    for i, agent in enumerate(agents):
+        for j, bid in enumerate(agent.bids_curve):
+            # now bid is [agent_index, quantity_i, price_i]
+            allBids.append([i] + bid)
+            supply_quantities_cleared.append(m.addVar(name="s_" + str(i) + "_" + str(j)))
+            m.addConstr(supply_quantities_cleared[-1] <= bid[0], \
+                    name="qs_" + str(i) + "_" + str(j)) 
+    
+    for i, bid in enumerate(demand):
+        demand_quantities_cleared.append(m.addVar(name="d_" + str(i)))
+        m.addConstr(demand_quantities_cleared[-1] <= bid[0], \
+                name="qd_" + str(i))
+
+# NOTE: not needed now
+#    sortByPrice = lambda bid : bid[2]
+#    allBids = sorted(allBids, key=sortByPrice)
+
+
+    m.addConstr(gp.quicksum(demand_quantities_cleared) \
+            - gp.quicksum(supply_quantities_cleared) == 0,
+            "balance_constraint")
+
+    ##########----- Set objective : maximize social welfare
+    obj = gp.quicksum([quantity * demand[i][1] \
+        for i, quantity in enumerate(demand_quantities_cleared) ]) \
+          - gp.quicksum([quantity * allBids[i][2] \
+        for i, quantity in enumerate(supply_quantities_cleared) ])
+
+    m.setObjective(obj, GRB . MAXIMIZE )
+    m.optimize()
+
+    supply_quantities_cleared_solution = []
+    demand_quantities_cleared_solution = []
+
+# NOTE FINISH
+    for var in supply_quantities_cleared:
+        supply_quantities_cleared_solution.append()
+
+    return supply_quantities_cleared, demand_quantities_cleared

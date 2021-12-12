@@ -61,7 +61,7 @@ class Agent:
 
 
     def generateBid(self):
-        chosen_strategy = random.choices(self.strategy,weights=self.strategy_mix,k=1)
+        chosen_strategy = random.choices(self.strategy, weights=self.strategy_mix,k=1)[0]
         self.bids_curve = chosen_strategy(self.true_evaluation)
 
 def updateStrategy(self):

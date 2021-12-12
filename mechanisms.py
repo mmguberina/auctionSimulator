@@ -14,13 +14,16 @@ possibly you'll need to rerun market clearing with different participants
 to calculate this (certainly will have to do it for shapley)
 """
 
-def uniformPricing(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
+
+
+
+def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                            date, cleared_bids_demand, cleared_bids_supply):
     """
     alocate payments based on the calculated price
     """
-    demand=bids_demand.index.unique(0).values #set of buyer agents
-    supply=bids_supply.index.unique(0).values #set of seller agents
+    demand = bids_demand.index.unique(0).values #set of buyer agents
+    supply = bids_supply.index.unique(0).values #set of seller agents
 
     uniform_price_clearing_results = pd.DataFrame(columns=["unifrom_price_SEKperkW"])
     return uniform_price_clearing_results

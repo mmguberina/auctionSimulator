@@ -16,6 +16,7 @@ from strategy_updating_algorithms import *
 if __name__ == "__main__":
     # Create demand curve
     n_of_demand_bids = 5
+    # only 1 buyer
     demand_curve = [[n_of_demand_bids - i, i] for i in range(n_of_demand_bids)]
 
     # Initialize agents
@@ -38,7 +39,9 @@ if __name__ == "__main__":
                 a.generateBid()
             # Market clearing function
             supply_bids = [a.bids_curve for a in agents]
-            m,x = primal_multibid(demand_curve,supply_bids)
+            supply_quantities_cleared = marketClearing(agents, demand_curve)
+            #print(supply_quantities_cleared)
+            exit()
             #cleared_bids_demand, cleared_bids_supply = clearing_results_processing_multibid(m,x,demand_curve,supply_bids,...)
             # Payment distribution
             #price_clearing_results = uniformPricing(m,,demand_curve,supply_bids,epoch,cleared_bids_demand,cleared_bids_supply)

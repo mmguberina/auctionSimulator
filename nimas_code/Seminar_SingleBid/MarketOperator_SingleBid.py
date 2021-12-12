@@ -36,8 +36,8 @@ def PrimalProblem (bids_buyers, bids_sellers):
     # bids_buyers = pd.read_excel(path_bid_buyers,index_col=[0])
     # bids_sellers = pd.read_excel(path_bid_sellers,index_col=[0])
     
-    B=bids_buyers.index.unique(0).values #set of buyer agents
-    S=bids_sellers.index.unique(0).values #set of seller agents
+    B = bids_buyers.index.unique(0).values #set of buyer agents
+    S = bids_sellers.index.unique(0).values #set of seller agents
     
     
     #___________________________Optimization_______________________________
