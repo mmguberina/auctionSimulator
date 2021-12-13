@@ -14,6 +14,13 @@ def plot1AgentChanges(agent):
 
 def plotAgentsChanges3D(agents):
     ax = plt.figure().add_subplot(projection='3d')
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1])
+    ax.set_zlim([0, 1])
+
+    ax.set_xlabel("pureStrategy5PercentHigher")
+    ax.set_ylabel("pureStrategy15PercentHigher")
+    ax.set_zlabel("pureStrategyBidTruthfully")
 
     t = np.arange(len(agents[0].strategy_mix_history))
     for i, agent in enumerate(agents):

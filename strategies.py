@@ -28,7 +28,7 @@ def pureStrategy10PercentHigher(true_evaluation):
 def pureStrategy15PercentHigher(true_evaluation):
     bids_curve = copy.deepcopy(true_evaluation)
     for bid in bids_curve:
-        bid[1] *= 1.10
+        bid[1] *= 1.15
     return bids_curve
 
 def pureStrategyBidTruthfully(true_evaluation):

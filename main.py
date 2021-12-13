@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # Create demand curve
     n_of_demand_bids = 5
     # only 1 buyer
-    demand_curve = [[n_of_demand_bids - i, i] for i in range(n_of_demand_bids)]
+    demand_curve = [[n_of_demand_bids , n_of_demand_bids - i] for i in range(n_of_demand_bids)]
 
     # Initialize agents
     n_agents = 5
