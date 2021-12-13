@@ -61,13 +61,14 @@ class Agent:
             # create self.strategies = [strategy1, ...]
             # and a list of equal length denoting how probable each strategy should be.
             # don't forget that the probabilities must sum to 1!
-            self.strategy = [pureStrategy5PercentHigher]
-            self.strategy_mix = [1]
+            self.strategy = [pureStrategy5PercentHigher, pureStrategy15PercentHigher, pureStrategyBidTruthfully]
+            rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
+            self.strategy_mix = [p / sum(rand_init) for p in rand_init]
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
             self.payoff_history = []
-            self.strategy_mix_history = []
+            self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
         else:
             raise NotImplementedError("Not all the same not implemented")
 

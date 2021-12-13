@@ -9,6 +9,7 @@ from market_clearing import *
 from mechanisms import *
 from strategies import *
 from strategy_updating_algorithms import *
+from visualising import *
 
 # let's start with the following
 # 1 buyer, static demand curve
@@ -28,8 +29,8 @@ if __name__ == "__main__":
     # Might want to move this to the runs.py file,
     runs_per_strategy_update = 1   # Example for simple strategies
                                     # (might need other criteria with more complex strategies)
-2    # define termination criteria
-    max_epochs = 20 # Just for testing with simple termination criteria
+    # define termination criteria
+    max_epochs = 200 # Just for testing with simple termination criteria
     epoch = 0
     while epoch < max_epochs:
         epoch += 1
@@ -41,8 +42,6 @@ if __name__ == "__main__":
             supply_bids = [a.bids_curve for a in agents]
             supply_quantities_cleared_solution, demand_quantities_cleared_solution = marketClearing(agents, demand_curve)
             uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution)
-            for agent in agents:
-                print(agent.payoff_history[-1])
 
 #            exit()
             #cleared_bids_demand, cleared_bids_supply = clearing_results_processing_multibid(m,x,demand_curve,supply_bids,...)
@@ -51,4 +50,7 @@ if __name__ == "__main__":
             # Accumulate payments/utility
 
         # Update strategy position
-        PSO(agents, price_clearing_results)
+        PSO(agents)
+
+    #plot1AgentChanges(agents[4])
+    plotAgentsChanges3D(agents)

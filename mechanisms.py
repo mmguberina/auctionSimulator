@@ -21,7 +21,7 @@ def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities
 #    print(supply_quantities_cleared_sorted)
 
     for solution in supply_quantities_cleared_sorted:
-        print(solution)
+#        print(solution)
         if solution[2] == 0:
             uniform_price = solution[1]
             break

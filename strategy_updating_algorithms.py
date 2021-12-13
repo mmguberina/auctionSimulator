@@ -12,7 +12,8 @@ output:
     - none, update agent's strategy parameters in place (in the object)
 """
 # Assumes that the agent strategy_mix parameter is a list of probabilities of choosing each strategy
-def PSO(agents, epoch_utility):
+def PSO(agents):
+    epoch_utility = [agent.payoff_history[-1] for agent in agents]
     # Weight parameters for movement components (dividing by ten to start conservatively)
     swarm_best_weight = random.random()/10
     agent_best_weight = random.random()/10
@@ -45,6 +46,7 @@ def PSO(agents, epoch_utility):
         for i in range(n_strategies):
             a.strategy_mix[i] = a.strategy_mix[i] + swarm_best_vector[i] + agent_best_vector[i] + random_movement_vector[i]
         a.strategy_mix = [a.strategy_mix[i]/sum(a.strategy_mix) for i in range(n_strategies)]
+        a.strategy_mix_history.append(copy.deepcopy(a.strategy_mix))
 
 
 def GA():
