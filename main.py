@@ -54,3 +54,4 @@ if __name__ == "__main__":
 
     #plot1AgentChanges(agents[4])
     plotAgentsChanges3D(agents)
+    plot1AgentChanges(agents)
