@@ -56,7 +56,7 @@ class Agent:
 
     def __init__(self, initType):
         if initType == "all_the_same":
-            self.true_evaluation = [[i+1, i+1] for i in range(5)]
+            self.true_evaluation = [[1, i+1] for i in range(5)]
             # if you want a mixed strategy,
             # create self.strategies = [strategy1, ...]
             # and a list of equal length denoting how probable each strategy should be.

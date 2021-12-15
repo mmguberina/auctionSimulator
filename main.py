@@ -18,7 +18,9 @@ if __name__ == "__main__":
     # Create demand curve
     n_of_demand_bids = 5
     # only 1 buyer
-    demand_curve = [[n_of_demand_bids , n_of_demand_bids - i] for i in range(n_of_demand_bids)]
+
+    demand_curve = [[5, n_of_demand_bids - i] for i in range(n_of_demand_bids)]
+    demand_curve[2][1] += 0.01
 
     # Initialize agents
     n_agents = 5
@@ -27,7 +29,7 @@ if __name__ == "__main__":
         agents.append(Agent("all_the_same"))
 
     # Might want to move this to the runs.py file,
-    runs_per_strategy_update = 1   # Example for simple strategies
+    runs_per_strategy_update = 200   # Example for simple strategies
                                     # (might need other criteria with more complex strategies)
     # define termination criteria
     max_epochs = 200 # Just for testing with simple termination criteria
@@ -38,20 +40,17 @@ if __name__ == "__main__":
         for i in range(runs_per_strategy_update):
             for a in agents:
                 a.generateBid()
+
             # Market clearing function
-            supply_bids = [a.bids_curve for a in agents]
+            #supply_bids = [a.bids_curve for a in agents]
             supply_quantities_cleared_solution, demand_quantities_cleared_solution = marketClearing(agents, demand_curve)
             uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution)
-
-#            exit()
-            #cleared_bids_demand, cleared_bids_supply = clearing_results_processing_multibid(m,x,demand_curve,supply_bids,...)
-            # Payment distribution
-            #price_clearing_results = uniformPricing(m,,demand_curve,supply_bids,epoch,cleared_bids_demand,cleared_bids_supply)
-            # Accumulate payments/utility
 
         # Update strategy position
         PSO(agents)
 
-    #plot1AgentChanges(agents[4])
-    plotAgentsChanges3D(agents)
-    plotAgentChanges2D(agents)
+
+    #plot1AgentChanges(agents[0])
+    plotSupplyDemand(agents,demand_curve)
+    plotAgentsChanges2D(agents)
+

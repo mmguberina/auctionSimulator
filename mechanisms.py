@@ -20,18 +20,23 @@ def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities
     supply_quantities_cleared_sorted = sorted(supply_quantities_cleared_solution, key=sortByPrice)
 #    print(supply_quantities_cleared_sorted)
 
-    for solution in supply_quantities_cleared_sorted:
+    for i, solution in enumerate(supply_quantities_cleared_sorted):
 #        print(solution)
-        if solution[2] == 0:
-            uniform_price = solution[1]
+        if solution[2] == 0 and i==0:
+            uniform_price = 0
+            break
+        elif solution[2] == 0:
+            uniform_price = supply_quantities_cleared_sorted[i-1][1]
             break
 
     price_interval_cuttoff = 0.5
 
     demand_quantities_cleared_sorted = sorted(demand_quantities_cleared_solution, key=sortByPrice)
-    for solution in demand_quantities_cleared_solution:
+    for i, solution in enumerate(demand_quantities_cleared_sorted):
+        if solution[2] == 0 and i==0:
+            break
         if solution[2] == 0:
-            uniform_price = uniform_price + price_interval_cuttoff * (solution[1] - uniform_price)
+            uniform_price = uniform_price + price_interval_cuttoff * (demand_quantities_cleared_sorted[i-1][1] - uniform_price)
             break
     
     payoffs = [0] * len(agents)
