@@ -1,13 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
-def plot1AgentChanges(agent):
-    strategy_mix_history = np.array(agent.strategy_mix_history)
+def plot1AgentChanges(agents):
+    strategy_mix_history = np.array(agents[0].strategy_mix_history)
     t = np.arange(len(strategy_mix_history))
+    #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
+        # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
+    mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
+    #strategy mix history in 2D
+    strategy_mix_history_2D = np.array([[list(np.matmul(strategy_mix,mapping_coeffs.T)) for strategy_mix in agent.strategy_mix_history] for agent in agents])
 
-    for i in range(len(strategy_mix_history[0])):
-        plt.plot(t, strategy_mix_history[:, i])
-
+    plt.figure()
+    #for each agent plot the 2D, extract the x and y values and plot
+    for agent_number in range(len(agents)):
+        x = strategy_mix_history_2D[agent_number][:,0]
+        y = strategy_mix_history_2D[agent_number][:,1]
+        plt.plot(x,y, label='agent_' + str(i))
+    #ploting the edges of the triangle
+    plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
     plt.show()
 
 
