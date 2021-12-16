@@ -13,7 +13,6 @@ from visualising import *
 
 
 payment_method = "VCG"
-#payment_method = "uniform_pricing"
 
 
 # let's start with the following
@@ -54,7 +53,7 @@ if __name__ == "__main__":
             if payment_method == "VCG":
                 VCG_nima_NoCost(agents,demand_curve,m,supply_quantities_cleared_solution)
         # Update strategy position
-        PSO(agents)
+        PSO(agents,runs_per_strategy_update)
 
 
     #plot1AgentChanges(agents[0])

@@ -13,9 +13,9 @@ output:
     - none, update agent's strategy parameters in place (in the object)
 """
 # Assumes that the agent strategy_mix parameter is a list of probabilities of choosing each strategy
-def PSO(agents):
+def PSO(agents, epoch_length):
     epoch_utility = [agent.payoff_history[-1] for agent in agents]
-    epoch_utility = [sum(agent.payoff_history[-200:]) for agent in agents]
+    epoch_utility = [sum(agent.payoff_history[-epoch_length:]) for agent in agents]
     # Weight parameters for movement components (dividing by ten to start conservatively)
     swarm_best_weight = random.random()/10
     agent_best_weight = random.random()/10
