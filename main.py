@@ -11,6 +11,10 @@ from strategies import *
 from strategy_updating_algorithms import *
 from visualising import *
 
+
+payment_method = "VCG"
+
+
 # let's start with the following
 # 1 buyer, static demand curve
 # same form as bid curve
@@ -44,14 +48,16 @@ if __name__ == "__main__":
             # Market clearing function
             #supply_bids = [a.bids_curve for a in agents]
             supply_quantities_cleared_solution, demand_quantities_cleared_solution,m = marketClearing(agents, demand_curve)
-            uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m)
-
+            if payment_method == "uniform_pricing":
+                uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m)
+            if payment_method == "VCG":
+                VCG_nima(agents,demand_curve,m,supply_quantities_cleared_solution)
         # Update strategy position
         PSO(agents)
 
 
     #plot1AgentChanges(agents[0])
     plotSupplyDemand(agents,demand_curve)
-    plotAgentsChanges2D(agents)
+    #plotAgentsChanges2D(agents)
     plotAgentChanges2D(agents)
 
