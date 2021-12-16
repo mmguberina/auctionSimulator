@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b733df39-f7df-4cde-8b01-d48cd077e594" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mechanisms.py" beforeDir="false" afterPath="$PROJECT_DIR$/mechanisms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/strategy_updating_algorithms.py" beforeDir="false" afterPath="$PROJECT_DIR$/strategy_updating_algorithms.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -35,10 +36,22 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
+            <state relative-caret-position="187">
+              <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="strategy_updating_algorithms.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/strategy_updating_algorithms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="15" column="30" lean-forward="true" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,7 +60,7 @@
       <file leaf-file-name="agents.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/agents.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
+            <state relative-caret-position="884">
               <caret line="53" column="32" selection-start-line="53" selection-start-column="32" selection-end-line="53" selection-end-column="32" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
@@ -59,7 +72,7 @@
       <file leaf-file-name="visualising.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/visualising.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
+            <state relative-caret-position="425">
               <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -71,8 +84,8 @@
       <file leaf-file-name="market_clearing.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/market_clearing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="174" column="41" lean-forward="true" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
+            <state relative-caret-position="2890">
+              <caret line="174" column="41" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -83,8 +96,8 @@
       <file leaf-file-name="mechanisms.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mechanisms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="62" column="56" lean-forward="true" selection-start-line="62" selection-start-column="56" selection-end-line="62" selection-end-column="56" />
+            <state relative-caret-position="306">
+              <caret line="68" column="54" lean-forward="true" selection-start-line="68" selection-start-column="54" selection-end-line="68" selection-end-column="54" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -121,11 +134,11 @@
         <option value="$PROJECT_DIR$/strategies.py" />
         <option value="$PROJECT_DIR$/tests.py" />
         <option value="$PROJECT_DIR$/agents.py" />
-        <option value="$PROJECT_DIR$/strategy_updating_algorithms.py" />
         <option value="$PROJECT_DIR$/visualising.py" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/mechanisms.py" />
+        <option value="$PROJECT_DIR$/strategy_updating_algorithms.py" />
+        <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
@@ -152,6 +165,7 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -169,7 +183,6 @@
         </subPane>
       </pane>
       <pane id="AndroidView" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -330,12 +343,14 @@
       <workItem from="1639566399147" duration="1581000" />
       <workItem from="1639568468333" duration="3415000" />
       <workItem from="1639574196533" duration="20352000" />
-      <workItem from="1639655002340" duration="4226000" />
+      <workItem from="1639655002340" duration="4824000" />
+      <workItem from="1639667356289" duration="2010000" />
+      <workItem from="1639669413993" duration="232000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70148000" />
+    <option name="totallyTimeSpent" value="72988000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
@@ -347,7 +362,7 @@
       <window_info id="Image Layers" order="6" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.5020243" side_tool="true" weight="0.26711187" />
-      <window_info anchor="right" x="0" y="0" width="273" height="535" id="Documentation" order="10" sideWeight="0.50569475" side_tool="true" visible="true" weight="0.094736844" />
+      <window_info anchor="right" x="0" y="0" width="273" height="535" id="Documentation" order="10" sideWeight="0.51025057" side_tool="true" visible="true" weight="0.094736844" />
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32955465" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.32888147" />
@@ -355,9 +370,9 @@
       <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4979757" visible="true" weight="0.26711187" />
       <window_info id="Capture Tool" order="5" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15951417" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16437247" />
       <window_info anchor="right" id="Database" order="7" weight="0.32955465" />
-      <window_info anchor="right" id="SciView" order="8" sideWeight="0.49430525" visible="true" weight="0.094736844" />
+      <window_info anchor="right" id="SciView" order="8" sideWeight="0.48974943" visible="true" weight="0.094736844" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="CSS-X-Fire" order="7" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -772,19 +787,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/strategy_updating_algorithms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/agents.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
+        <state relative-caret-position="884">
           <caret line="53" column="32" selection-start-line="53" selection-start-column="32" selection-end-line="53" selection-end-column="32" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
@@ -794,8 +799,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/market_clearing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="174" column="41" lean-forward="true" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
+        <state relative-caret-position="2890">
+          <caret line="174" column="41" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -804,7 +809,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/visualising.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
+        <state relative-caret-position="425">
           <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -814,18 +819,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mechanisms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="62" column="56" lean-forward="true" selection-start-line="62" selection-start-column="56" selection-end-line="62" selection-end-column="56" />
+        <state relative-caret-position="306">
+          <caret line="68" column="54" lean-forward="true" selection-start-line="68" selection-start-column="54" selection-end-line="68" selection-end-column="54" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/strategy_updating_algorithms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="15" column="30" lean-forward="true" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
+        <state relative-caret-position="187">
+          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
