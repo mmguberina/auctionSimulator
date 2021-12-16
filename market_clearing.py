@@ -172,7 +172,7 @@ def primal_multibid(bids_demand,bids_supply):
 
 
 
-def marketClearing(agents, demand):
+def marketClearing(agents, demand_curve):
 
     m = gp . Model ("CL_activation_primal_multibid")
     m.Params.LogToConsole = 0
@@ -199,7 +199,7 @@ def marketClearing(agents, demand):
             m.addConstr(supply_quantities_cleared[-1] <= bid[0], \
                     name="qs_" + str(i) + "_" + str(j)) 
     
-    for i, bid in enumerate(demand):
+    for i, bid in enumerate(demand_curve):
         demand_quantities_cleared.append(m.addVar(name="d_" + str(i)))
         m.addConstr(demand_quantities_cleared[-1] <= bid[0], \
                 name="qd_" + str(i))
@@ -209,7 +209,7 @@ def marketClearing(agents, demand):
             "balance_constraint")
 
     ##########----- Set objective : maximize social welfare
-    obj = gp.quicksum([quantity * demand[i][1] \
+    obj = gp.quicksum([quantity * demand_curve[i][1] \
         for i, quantity in enumerate(demand_quantities_cleared) ]) \
           - gp.quicksum([quantity * allBids[i][1] \
         for i, quantity in enumerate(supply_quantities_cleared) ])
@@ -227,5 +227,5 @@ def marketClearing(agents, demand):
 
     for i, var in enumerate(demand_quantities_cleared):
         # = deman_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount],...]
-        demand_quantities_cleared_solution.append(demand[i] + [var.x])
-    return supply_quantities_cleared_solution, demand_quantities_cleared_solution
+        demand_quantities_cleared_solution.append(demand_curve[i] + [var.x])
+    return supply_quantities_cleared_solution, demand_quantities_cleared_solution, m

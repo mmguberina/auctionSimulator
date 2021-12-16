@@ -43,8 +43,8 @@ if __name__ == "__main__":
 
             # Market clearing function
             #supply_bids = [a.bids_curve for a in agents]
-            supply_quantities_cleared_solution, demand_quantities_cleared_solution = marketClearing(agents, demand_curve)
-            uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution)
+            supply_quantities_cleared_solution, demand_quantities_cleared_solution,m = marketClearing(agents, demand_curve)
+            uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m)
 
         # Update strategy position
         PSO(agents)
@@ -53,4 +53,5 @@ if __name__ == "__main__":
     #plot1AgentChanges(agents[0])
     plotSupplyDemand(agents,demand_curve)
     plotAgentsChanges2D(agents)
+    plotAgentChanges2D(agents)
 
