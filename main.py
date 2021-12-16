@@ -29,10 +29,10 @@ if __name__ == "__main__":
         agents.append(Agent("all_the_same"))
 
     # Might want to move this to the runs.py file,
-    runs_per_strategy_update = 200   # Example for simple strategies
+    runs_per_strategy_update = 50   # Example for simple strategies
                                     # (might need other criteria with more complex strategies)
     # define termination criteria
-    max_epochs = 200 # Just for testing with simple termination criteria
+    max_epochs = 50 # Just for testing with simple termination criteria
     epoch = 0
     while epoch < max_epochs:
         epoch += 1
@@ -44,14 +44,14 @@ if __name__ == "__main__":
             # Market clearing function
             #supply_bids = [a.bids_curve for a in agents]
             supply_quantities_cleared_solution, demand_quantities_cleared_solution,m = marketClearing(agents, demand_curve)
-            uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m)
-
+            #uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m)
+            VCG(agents,demand_curve,m,supply_quantities_cleared_solution)
         # Update strategy position
         PSO(agents)
 
 
     #plot1AgentChanges(agents[0])
     plotSupplyDemand(agents,demand_curve)
-    plotAgentsChanges2D(agents)
+    #plotAgentsChanges2D(agents)
     plotAgentChanges2D(agents)
 

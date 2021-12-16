@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import pandas as pd
 import gurobipy as gp
@@ -5,6 +6,7 @@ from gurobipy import GRB
 import matplotlib.pyplot as plt
 
 from market_clearing import primal_multibid
+from market_clearing import marketClearing
 
 """
 take agent contributions and social welfare
@@ -43,16 +45,26 @@ def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities
 
     payoffs = [0] * len(agents)
     for solution in supply_quantities_cleared_solution:
-#        print(solution)
         payoffs[solution[3]] += uniform_price * solution[2]
 
     for i, agent in enumerate(agents):
         agent.payoff_history.append(payoffs[i])
 
 
+def VCG(agents, demand_curve, m_grand_coalition, cleared_bids_supply):
 
+    SW_N = m_grand_coalition.ObjVal
+    for i, agent in enumerate(agents):
+        grand_coalition_wo_agent = copy.deepcopy(agents)
+        grand_coalition_wo_agent.remove(grand_coalition_wo_agent[i])
 
+        supply_cleared_wo_agent, demand_cleared_wo_agent, m_wo_agent = marketClearing(grand_coalition_wo_agent, demand_curve)
+        sw_wo_agent = m_wo_agent.ObjVal
+        agent_marginal_contribution = SW_N - sw_wo_agent
 
+        agent_cost_or_value = sum([bid[1]*bid[2] for bid in cleared_bids_supply if bid[3]==i])
+        agent_vcg_payment = agent_marginal_contribution + agent_cost_or_value #Simplified marginal_contribution - cost_or_value*(-1)
+        agent.payoff_history.append(agent_vcg_payment)
 
 
 
@@ -69,7 +81,7 @@ def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bid
 
 
 
-def VCG(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
+def VCGOld(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                 date, cleared_bids_demand, cleared_bids_supply):
     demand=bids_demand.index.unique(0).values #set of buyer agents
     supply=bids_supply.index.unique(0).values #set of seller agents
