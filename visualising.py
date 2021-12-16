@@ -71,6 +71,7 @@ Plots the latest supply/demand curves
 def plotSupplyDemand(agents, demand_curve):
 
     #t = range(sum([demand[1]] for demand in demand_curve))#np.arange(len(strategy_mix_history))
+    plt.figure()
     tmp = 0
     x_points_demand = []
     y_points_demand = []
@@ -103,4 +104,4 @@ def plotSupplyDemand(agents, demand_curve):
 
     plt.plot(x_points_supply, y_points_supply, label='Supply')
 
-    plt.show()
+    plt.show(block=False)

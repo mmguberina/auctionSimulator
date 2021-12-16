@@ -89,6 +89,24 @@ def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution):
     for i, agent in enumerate(agents):
         agent.payoff_history.append(payoffs[i])
 
+def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution):
+    SW_grand_coalition = m.ObjVal
+
+    payoffs = [0] * len(agents)
+    marg_contribution = [0] * len(agents)
+    declared_cost = [0] * len(agents)
+    for i,agent in enumerate(agents):
+        #calculating the marginal contribution to the social welfare
+        agents_without_i = copy.deepcopy(agents)
+        del agents_without_i[i]
+        _,_,m_without_i = marketClearing(agents_without_i,demand_curve)
+        marg_contribution [i] = SW_grand_coalition -  m_without_i.ObjVal
+        #payoff calculation
+        payoffs [i] = marg_contribution[i]
+
+    for i, agent in enumerate(agents):
+        agent.payoff_history.append(payoffs[i])
+
 def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                            date, cleared_bids_demand, cleared_bids_supply):
     """
