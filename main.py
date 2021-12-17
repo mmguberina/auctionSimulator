@@ -23,9 +23,10 @@ if __name__ == "__main__":
     # Create demand curve
     n_of_demand_bids = 5
     # only 1 buyer
-
-    demand_curve = [[5, n_of_demand_bids - i] for i in range(n_of_demand_bids)]
-    demand_curve[2][1] += 0.01
+    #demand_curve = [[5, (n_of_demand_bids - i)*1.2] for i in range(n_of_demand_bids)]
+    #demand_curve[2][1] += 0.01
+    n_of_demand_bids = 20
+    demand_curve = [[25/n_of_demand_bids,i] for i in list(np.linspace(5, 1, num = n_of_demand_bids))]
 
     # Initialize agents
     n_agents = 5
@@ -72,3 +73,4 @@ if __name__ == "__main__":
         # plotAgentsChanges2D(agents)
         plotAgentChanges2D(agents,payment_method)
         plotSW(SW_history, runs_per_strategy_update,payment_method)
+        plotPayoffs(agents)

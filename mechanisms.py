@@ -94,7 +94,6 @@ def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution
 
     payoffs = [0] * len(agents)
     marg_contribution = [0] * len(agents)
-    declared_cost = [0] * len(agents)
     for i,agent in enumerate(agents):
         #calculating the marginal contribution to the social welfare
         agents_without_i = copy.deepcopy(agents)

@@ -28,6 +28,13 @@ def plotSW(SW_history,runs_per_strategy_update,payment_method):
 
     plt.show()
 
+def plotPayoffs (agents):
+    plt.figure()
+    for idx, agent in enumerate(agents):
+        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, int(len(agent.payoff_history)/20)), axis=1)
+        plt.plot([i for i in range(len(epoch_agent_payoff_average))],epoch_agent_payoff_average, label='agent_' + str(idx))
+        plt.legend()
+
 def plotAgentChanges2D(agents,payment_method):
 
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
@@ -45,6 +52,7 @@ def plotAgentChanges2D(agents,payment_method):
     #ploting the edges of the triangle
     plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
     plt.title(payment_method)
+    plt.legend()
     plt.show()
 
 
