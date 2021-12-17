@@ -6,7 +6,19 @@ TODO:
 - make it better
 - repeat previous point until satisfaction or deadline is reached
 
-- Look at more interesting strategies
-- Implement the above mentioned strategies
-- Implement VCG and some other mechanism
-- Implement data log so we can process data after
+
+-	Negative random movement in PSO -- Samuel
+    - Because otherwise it will converge to the center
+-	Logging the results
+  -	 Triangle plot
+    -	Labeling the corners
+    -	Arrows
+  -	SW at each epoch -- Nima
+  -	3D plot including the triangle and then at z the epoch payoff
+-	VCG has to be checked (why not truthful convergence) -- Nima
+-	Re-run the total epoch and then plot
+-	Termination criteria
+-	Another strategy update method
+-	another bidding strategy
+
+
