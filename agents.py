@@ -54,7 +54,7 @@ class Agent:
      - history of strategy mixes
     """
 
-    def __init__(self, initType):
+    def __init__(self, initType,init_strategy_mix,i):
         if initType == "all_the_same":
             self.true_evaluation = [[1, i+1] for i in range(5)]
             # if you want a mixed strategy,
@@ -62,8 +62,14 @@ class Agent:
             # and a list of equal length denoting how probable each strategy should be.
             # don't forget that the probabilities must sum to 1!
             self.strategy = [pureStrategy5PercentHigher, pureStrategy15PercentHigher, pureStrategyBidTruthfully]
-            rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
-            self.strategy_mix = [p / sum(rand_init) for p in rand_init]
+            #if it is the first payment method, we randomize the initial point
+            if len(init_strategy_mix) != 5:
+                rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
+                self.strategy_mix = [p / sum(rand_init) for p in rand_init]
+            else:
+                #if it is not the first payment method, we used the initial strategy mix that was used in the first
+                    #payment method
+                self.strategy_mix = copy.deepcopy(init_strategy_mix[i])
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
