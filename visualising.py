@@ -2,6 +2,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
+def plotSW(SW_history,runs_per_strategy_update):
+    np_SW_history = np.array(SW_history)
+    epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
+    plt.figure()
+    x = np.array([i for i in range(len(epoch_SW_average))])
+    y = epoch_SW_average
+    plt.plot(x,y)
+
+    #model1 = np.poly1d(np.polyfit(x, y, 1))
+    #model2 = np.poly1d(np.polyfit(x, y, 2))
+    model3 = np.poly1d(np.polyfit(x, y, 3))
+    #model4 = np.poly1d(np.polyfit(x, y, 4))
+    #model5 = np.poly1d(np.polyfit(x, y, 5))
+
+    #plt.plot(x, model1(x), color='green')
+    #plt.plot(x, model2(x), color='red')
+    plt.plot(x, model3(x), '--' , color='purple')
+    #plt.plot(x, model4(x), color='blue')
+    #plt.plot(x, model5(x), color='orange')
+
+    plt.xlabel("epoch")
+    plt.ylabel("Social welfare")
+
+    plt.show()
+
 def plotAgentChanges2D(agents):
 
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
