@@ -69,8 +69,8 @@ if __name__ == "__main__":
             PSO(agents, runs_per_strategy_update)
 
         # plot1AgentChanges(agents[0])
-        plotSupplyDemand(agents, demand_curve, payment_method)
+        #plotSupplyDemand(agents, demand_curve, payment_method)
         # plotAgentsChanges2D(agents)
         plotAgentChanges2D(agents,payment_method)
-        plotSW(SW_history, runs_per_strategy_update,payment_method)
-        plotPayoffs(agents)
+        #plotSW(SW_history, runs_per_strategy_update,payment_method)
+        #plotPayoffs(agents)

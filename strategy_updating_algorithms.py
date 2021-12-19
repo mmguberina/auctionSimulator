@@ -19,7 +19,7 @@ def PSO(agents, epoch_length):
     # Weight parameters for movement components (dividing by ten to start conservatively)
     swarm_best_weight = random.random()/10
     agent_best_weight = random.random()/10
-    random_movement_weight = random.random()/10*0
+    random_movement_weight = random.random()/10
 
     # Find top agents (might want to swap to swarm best known including history)
     max_util = max(epoch_utility)
@@ -44,13 +44,25 @@ def PSO(agents, epoch_length):
 
 
         # Random movement
-        random_movement_vector = [random.random()*random_movement_weight for i in range(n_strategies)]
-
+        random_movement_vector = [(random.random()*2-1)*random_movement_weight for i in range(n_strategies)]
 
         #Update agent position (might want to change to update agent velocity)
+        strategy_mix = [0]*n_strategies
         for i in range(n_strategies):
-            a.strategy_mix[i] = a.strategy_mix[i] + swarm_best_vector[i] + agent_best_vector[i] + random_movement_vector[i]
-        a.strategy_mix = [a.strategy_mix[i]/sum(a.strategy_mix) for i in range(n_strategies)]
+            strategy_mix[i] = a.strategy_mix[i] + swarm_best_vector[i] + agent_best_vector[i] + random_movement_vector[i]
+        strategy_mix = [strategy_mix[i]/sum(strategy_mix) for i in range(n_strategies)]
+
+        # Project back on feasible set (specifically for n_strategies = 3)
+        plane_points = [[1,0,0],[0,1,0],[0,0,1]]
+        if n_strategies == 3:
+            for repeat in range(2):
+                for i, mix in enumerate(strategy_mix):
+                    if mix < 0: # If negative project back onto the line
+                        AB = np.subtract(plane_points[(i+2)%n_strategies],plane_points[(i+1)%n_strategies])
+                        AS = np.subtract(strategy_mix,plane_points[(i+1)%n_strategies])
+                        strategy_mix = np.add(plane_points[(i+1)%n_strategies], [np.dot(AS,AB)/np.dot(AB,AB)*ab for ab in AB])
+
+        a.strategy_mix = copy.deepcopy(strategy_mix)
         a.strategy_mix_history.append(copy.deepcopy(a.strategy_mix))
 
 

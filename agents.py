@@ -64,8 +64,10 @@ class Agent:
             self.strategy = [pureStrategy5PercentHigher, pureStrategy15PercentHigher, pureStrategyBidTruthfully]
             #if it is the first payment method, we randomize the initial point
             if len(init_strategy_mix) != 5:
-                rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
-                self.strategy_mix = [p / sum(rand_init) for p in rand_init]
+                #rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
+                #self.strategy_mix = [p / sum(rand_init) for p in rand_init]
+                self.strategy_mix = np.random.dirichlet(np.ones(len(self.strategy))/2,size=1)[0]
+
             else:
                 #if it is not the first payment method, we used the initial strategy mix that was used in the first
                     #payment method
