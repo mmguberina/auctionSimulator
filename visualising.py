@@ -1,7 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import pickle
+import os
 
+
+def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update):
+    if not os.path.exists('Results'):
+        os.makedirs('Results')
+    with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
+                                                                               +'runs.pkl', 'wb') as outp:
+        pickle.dump(agents,outp)
+    with open ('Results\\SW history_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
+                                                                               +'runs.pkl', 'wb') as outp:
+        pickle.dump(SW_history, outp)
+    #to load
+    #with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
+    #                                                                          +'runs.pkl', 'rb') as inp:
+    #agents_loaded = pickle.load(inp)
+    SW_history_loaded = pickle.load(inp)
 def plotSW(SW_history,runs_per_strategy_update,payment_method):
     np_SW_history = np.array(SW_history)
     epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)

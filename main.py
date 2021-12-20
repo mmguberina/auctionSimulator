@@ -73,8 +73,9 @@ if __name__ == "__main__":
             PSO(agents, max_epochs, epoch)
             epoch += 1
 
+        SavingAgents(agents, SW_history, payment_method, max_epochs, runs_per_strategy_update)
         plotSupplyDemand(agents, demand_curve, payment_method)
-        plotAgentChanges2D(agents,payment_method)
-        plotSW(SW_history, runs_per_strategy_update,payment_method)
-        plotPayoffs(agents,payment_method,runs_per_strategy_update)
+        plotAgentChanges2D(agents, payment_method)
+        plotSW(SW_history, runs_per_strategy_update, payment_method)
+        plotPayoffs(agents, payment_method, runs_per_strategy_update)
 
