@@ -28,11 +28,14 @@ def plotSW(SW_history,runs_per_strategy_update,payment_method):
 
     plt.show()
 
-def plotPayoffs (agents):
+def plotPayoffs (agents,payment_method,runs_per_strategy_update):
     plt.figure()
     for idx, agent in enumerate(agents):
-        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, int(len(agent.payoff_history)/20)), axis=1)
+        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
         plt.plot([i for i in range(len(epoch_agent_payoff_average))],epoch_agent_payoff_average, label='agent_' + str(idx))
+        plt.xlabel("Epoch")
+        plt.ylabel("Payoffs")
+        plt.title(payment_method)
         plt.legend()
 
 def plotAgentChanges2D(agents,payment_method):

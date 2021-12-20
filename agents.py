@@ -75,7 +75,7 @@ class Agent:
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
-            self.payoff_history = [None]*(max_epochs * runs_per_strategy_update + 1)
+            self.payoff_history = [None]*(max_epochs * runs_per_strategy_update)
             #self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
             self.strategy_mix_history = [None]*(max_epochs+1)
             self.strategy_mix_history[0] = copy.deepcopy(self.strategy_mix)

@@ -41,15 +41,15 @@ if __name__ == "__main__":
             agents.append(Agent("all_the_same", init_strategy_mix, agent_num, max_epochs, runs_per_strategy_update))
             #if it is the first payment method, we save the init_strategy_mix to be used later as the initial for the
             #   other payment methods
-            if len(init_strategy_mix) != 5:
+            if len(init_strategy_mix) != n_agents:
                 init_strategy_mix.append(agents[agent_num].strategy_mix)
         # Social welfare history
-        SW_history = []
+        SW_history = [None] * max_epochs * runs_per_strategy_update
 
         epoch = 0
         while epoch < max_epochs:
             print(epoch)
-            epoch += 1
+
             # Run runs_per_strategy_update times
             for run_of_strategy in range(runs_per_strategy_update):
                 for a in agents:
@@ -59,7 +59,7 @@ if __name__ == "__main__":
                 # supply_bids = [a.bids_curve for a in agents]
                 supply_quantities_cleared_solution, demand_quantities_cleared_solution, m = marketClearing(agents,
                                                                                                            demand_curve)
-                SW_history.append(m.ObjVal)
+                SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
                 if payment_method == "uniform_pricing":
                     uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, \
                                    epoch, runs_per_strategy_update, run_of_strategy)
@@ -71,8 +71,10 @@ if __name__ == "__main__":
                              runs_per_strategy_update, run_of_strategy)
             # Update strategy position
             PSO(agents, max_epochs, epoch)
+            epoch += 1
 
         plotSupplyDemand(agents, demand_curve, payment_method)
         plotAgentChanges2D(agents,payment_method)
         plotSW(SW_history, runs_per_strategy_update,payment_method)
-        #plotPayoffs(agents,payment_method)
+        plotPayoffs(agents,payment_method,runs_per_strategy_update)
+

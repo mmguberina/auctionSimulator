@@ -65,7 +65,7 @@ def PSO(agents, epoch_length, epoch):
 
         a.strategy_mix = copy.deepcopy(strategy_mix)
         #a.strategy_mix_history.append(copy.deepcopy(a.strategy_mix))
-        a.strategy_mix_history[epoch] = a.strategy_mix
+        a.strategy_mix_history[epoch+1] = a.strategy_mix
 
 def GA():
     pass
