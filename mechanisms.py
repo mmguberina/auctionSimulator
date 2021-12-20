@@ -17,7 +17,8 @@ to calculate this (certainly will have to do it for shapley)
 """
 
 
-def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution,m):
+def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, epoch,\
+                   runs_per_strategy_update, run_of_strategy):
     uniform_price = m.getConstrByName("balance_constraint").Pi
 
 #     sortByPrice = lambda solution : solution[1]
@@ -49,7 +50,8 @@ def uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities
         payoffs[solution[3]] += uniform_price * solution[2]
 
     for i, agent in enumerate(agents):
-        agent.payoff_history.append(payoffs[i])
+        #agent.payoff_history.append(payoffs[i])
+        agent.payoff_history[runs_per_strategy_update * (epoch-1) + run_of_strategy - 1] = payoffs[i]
 
 
 def VCG(agents, demand_curve, m_grand_coalition, cleared_bids_supply):
@@ -68,7 +70,8 @@ def VCG(agents, demand_curve, m_grand_coalition, cleared_bids_supply):
         agent_vcg_payment = agent_marginal_contribution + agent_cost_or_value #Simplified marginal_contribution - cost_or_value*(-1)
         agent.payoff_history.append(agent_vcg_payment)
 
-def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution):
+def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
+              runs_per_strategy_update, run_of_strategy):
     SW_grand_coalition = m.ObjVal
 
     payoffs = [0] * len(agents)
@@ -87,9 +90,11 @@ def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution):
         payoffs [i] = marg_contribution[i] + declared_cost[i]
 
     for i, agent in enumerate(agents):
-        agent.payoff_history.append(payoffs[i])
+        #agent.payoff_history.append(payoffs[i])
+        agent.payoff_history[runs_per_strategy_update * (epoch-1) + run_of_strategy - 1] = payoffs[i]
 
-def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution):
+def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
+                     runs_per_strategy_update, run_of_strategy):
     SW_grand_coalition = m.ObjVal
 
     payoffs = [0] * len(agents)
@@ -104,8 +109,8 @@ def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution
         payoffs [i] = marg_contribution[i]
 
     for i, agent in enumerate(agents):
-        agent.payoff_history.append(payoffs[i])
-
+        #agent.payoff_history.append(payoffs[i])
+        agent.payoff_history[runs_per_strategy_update * (epoch-1) + run_of_strategy - 1] = payoffs[i]
 def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                            date, cleared_bids_demand, cleared_bids_supply):
     """

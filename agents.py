@@ -54,7 +54,7 @@ class Agent:
      - history of strategy mixes
     """
 
-    def __init__(self, initType,init_strategy_mix,i):
+    def __init__(self, initType, init_strategy_mix, agent_num, max_epochs, runs_per_strategy_update):
         if initType == "all_the_same":
             self.true_evaluation = [[1, i+1] for i in range(5)]
             # if you want a mixed strategy,
@@ -71,12 +71,14 @@ class Agent:
             else:
                 #if it is not the first payment method, we used the initial strategy mix that was used in the first
                     #payment method
-                self.strategy_mix = copy.deepcopy(init_strategy_mix[i])
+                self.strategy_mix = copy.deepcopy(init_strategy_mix[agent_num])
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
             self.bids_curve = self.strategy[0](self.true_evaluation)
-            self.payoff_history = []
-            self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
+            self.payoff_history = [None]*(max_epochs * runs_per_strategy_update + 1)
+            #self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
+            self.strategy_mix_history = [None]*(max_epochs+1)
+            self.strategy_mix_history[0] = copy.deepcopy(self.strategy_mix)
         else:
             raise NotImplementedError("Not all the same not implemented")
 
