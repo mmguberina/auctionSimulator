@@ -1,24 +1,131 @@
+import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pickle
 import os
+import pandas as pd
+
+def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
+    column_names = ["s_mix","s_mix_2D","payoff"]
+    agents_list = [i for i in range (n_agents)]
+    whole_epochs_runs_list = [i for i in range(whole_epochs_runs)]
+    epochs_list = [i for i in range(max_epochs)]
+
+    #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
+        # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
+    mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
+
+    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs_list ,agents_list, epochs_list],\
+                                                names=["payment_method", "n_whole_epoch","agent","epoch"])
+    results = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
+                                   columns=column_names, index=MultiIndex_obj)
+    for payment_method in payment_methods:
+        for epochs_run in range(whole_epochs_runs):
+            with open('Results\\agents_' + payment_method + "_" + str(max_epochs) + \
+                      "epochs_" + str(runs_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
+                agents = pickle.load(inp)
+                for agent_number, agent in enumerate(agents):
+                    results.loc[(payment_method,epochs_run,agent_number),"s_mix"] =\
+                        pd.Series(agent.strategy_mix_history[:-1]).values
+                    results.loc[(payment_method,epochs_run,agent_number),"payoff"] =\
+                        np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
+                    results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"] = \
+                        pd.Series([np.matmul(strategy_mix, mapping_coeffs.T) for strategy_mix in
+                          agent.strategy_mix_history[:-1]]).values
+
+    return results
+
+def plotAgentsChanges2D_all(results):
+    for payment_method in results.index.levels[0]:
+        plt.figure()
+        for epochs_run in results.index.levels[1]:
+            for agent_number in results.index.levels[2]:
+                x = [i[0] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
+                y = [i[1] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
+                plt.scatter(x,y,s=1,label='agent ' + str(agent_number),c=[i for i in range(len(x))],cmap='Blues')
+        # ploting the edges of the triangle
+        plt.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                 'k')
+        cbar = plt.colorbar()
+        cbar.set_label('Epoch')
+        plt.show()
 
 
-def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update):
+'''
+    #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
+        # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
+    mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
+    #strategy mix history in 2D
+    colormaps=['Purples','Blues','Greens','Oranges','Reds','YlOrBr','PuBu']
+
+    for payment_method in payment_methods:
+        plt.figure()
+        for epochs_run in range(whole_epochs_runs):
+            # to load
+            with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+\
+                       "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'rb') as inp:
+                agents = pickle.load(inp)
+            #SW_history = pickle.load(inp)
+            strategy_mix_history_2D = np.array(
+                [[list(np.matmul(strategy_mix, mapping_coeffs.T)) for strategy_mix in agent.strategy_mix_history] for
+                 agent in agents])
+            #for each agent plot the 2D, extract the x and y values and plot
+            for agent_number in range(len(agents)):
+                x = strategy_mix_history_2D[agent_number][:,0]
+                y = strategy_mix_history_2D[agent_number][:,1]
+                plt.scatter(x,y,s=1,label='agent ' + str(agent_number),c=[i for i in range(len(x))],cmap='Blues')
+            #ploting the edges of the triangle
+            plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
+    plt.title(payment_method)
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys())
+    cbar = plt.colorbar()
+    cbar.set_label('Epoch')
+    #plt.legend()
+    plt.show()
+'''
+'''
+def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
+    try:
+        from astropy.convolution import Gaussian2DKernel, convolve
+        astro_smooth = True
+    except ImportError as IE:
+        astro_smooth = False
+    x = [i[0] for i in results.loc[:,"s_mix_2D"]]
+    y = [i[1] for i in results.loc[:,"s_mix_2D"]]
+
+    H, xedges, yedges = np.histogram2d(x, y, bins=(50, 40))
+    xmesh, ymesh = np.meshgrid(xedges[:-1], yedges[:-1])
+
+    # Smooth the contours (if astropy is installed)
+    #if astro_smooth:
+    #    kernel = Gaussian2DKernel(stddev=1.)
+    #    H = convolve(H, kernel)
+
+
+    fig, ax = plt.subplots(1, figsize=(7, 6))
+    clevels = ax.contour(xmesh, ymesh, H.T, lw=.9, cmap='winter')  # ,zorder=90)
+
+    # Identify points within contours
+    p = clevels.collections[0].get_paths()
+    inside = np.full_like(x, False, dtype=bool)
+    for level in p:
+        inside |= level.contains_points(zip(*(x, y)))
+
+    ax.plot(x[~inside], y[~inside], 'kx')
+    plt.show(block=False)
+'''
+def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run):
     if not os.path.exists('Results'):
         os.makedirs('Results')
-    with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
-                                                                               +'runs.pkl', 'wb') as outp:
+    with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+\
+               "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'wb') as outp:
         pickle.dump(agents,outp)
-    with open ('Results\\SW history_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
-                                                                               +'runs.pkl', 'wb') as outp:
         pickle.dump(SW_history, outp)
-    #to load
-    #with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+"epochs_"+str(runs_per_strategy_update)\
-    #                                                                          +'runs.pkl', 'rb') as inp:
-    #agents_loaded = pickle.load(inp)
-    SW_history_loaded = pickle.load(inp)
+
 def plotSW(SW_history,runs_per_strategy_update,payment_method):
     np_SW_history = np.array(SW_history)
     epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
@@ -68,7 +175,7 @@ def plotAgentChanges2D(agents,payment_method):
     for agent_number in range(len(agents)):
         x = strategy_mix_history_2D[agent_number][:,0]
         y = strategy_mix_history_2D[agent_number][:,1]
-        plt.plot(x,y, label='agent_' + str(agent_number))
+        plt.scatter(x,y, s=4, label='agent_' + str(agent_number))
     #ploting the edges of the triangle
     plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
     plt.title(payment_method)
