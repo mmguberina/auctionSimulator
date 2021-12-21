@@ -44,6 +44,7 @@ if __name__ == "__main__":
             if len(init_strategy_mix) != n_agents:
                 init_strategy_mix.append(agents[agent_num].strategy_mix)
         # Social welfare history
+
         SW_history = [None] * max_epochs * runs_per_strategy_update
 
         epoch = 0

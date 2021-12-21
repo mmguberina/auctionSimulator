@@ -56,12 +56,18 @@ def PSO(agents, epoch_length, epoch):
         # Project back on feasible set (specifically for n_strategies = 3)
         plane_points = [[1,0,0],[0,1,0],[0,0,1]]
         if n_strategies == 3:
-            for repeat in range(2):
-                for i, mix in enumerate(strategy_mix):
-                    if mix < 0: # If negative project back onto the line
-                        AB = np.subtract(plane_points[(i+2)%n_strategies],plane_points[(i+1)%n_strategies])
-                        AS = np.subtract(strategy_mix,plane_points[(i+1)%n_strategies])
-                        strategy_mix = np.add(plane_points[(i+1)%n_strategies], [np.dot(AS,AB)/np.dot(AB,AB)*ab for ab in AB])
+            for i, mix in enumerate(strategy_mix):
+                if mix < 0: # If negative project back onto the line
+                    AB = np.subtract(plane_points[(i+2)%n_strategies],plane_points[(i+1)%n_strategies])
+                    AS = np.subtract(strategy_mix,plane_points[(i+1)%n_strategies])
+                    strategy_mix = np.add(plane_points[(i+1)%n_strategies], [np.dot(AS,AB)/np.dot(AB,AB)*ab for ab in AB])
+                    break
+            negative = [i for i, j in enumerate(strategy_mix) if j < 0]
+            if len(negative) != 0:
+                strategy_mix = [1,1,1]
+                strategy_mix[i] = 0
+                strategy_mix[negative[0]] = 0
+
 
         a.strategy_mix = copy.deepcopy(strategy_mix)
         #a.strategy_mix_history.append(copy.deepcopy(a.strategy_mix))
