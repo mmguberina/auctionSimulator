@@ -72,6 +72,9 @@ if __name__ == "__main__":
                         VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
                                  runs_per_strategy_update, run_of_strategy)
                 # Update strategy position
+                for agent in agents:
+                    agent.epoch_payoff_history[epoch] = \
+                        mean(agent.payoff_history[runs_per_strategy_update*epoch:runs_per_strategy_update*(epoch+1)])
                 PSO(agents, max_epochs, epoch)
                 epoch += 1
 

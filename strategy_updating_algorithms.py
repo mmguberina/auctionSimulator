@@ -16,7 +16,8 @@ output:
 def PSO(agents, epoch_length, epoch):
     #epoch_utility = [agent.payoff_history[-1] for agent in agents]
     #epoch_utility = [sum(agent.payoff_history[-epoch_length:]) for agent in agents]
-    epoch_utility = [sum(agent.payoff_history[:epoch]) for agent in agents]
+    #epoch_utility = [sum(agent.payoff_history[:epoch]) for agent in agents]
+    epoch_utility = [agent.epoch_payoff_history[epoch] for agent in agents]
     # Weight parameters for movement components (dividing by ten to start conservatively)
     swarm_best_weight = random.random()/10
     agent_best_weight = random.random()/10
