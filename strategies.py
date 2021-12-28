@@ -40,7 +40,7 @@ def priceAdjusting(agent):
         last_payoff = agent.last_adjusting_payoff
         for i, bid in enumerate(bids):
             last_payoff -= bid
-            if last_payoff > 0:
+            if last_payoff >= 0:
                 bids[i] *= 1.05
             else:
                 bids[i] *= 0.95
