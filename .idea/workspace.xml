@@ -93,8 +93,8 @@
       <file leaf-file-name="strategies.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/strategies.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+            <state relative-caret-position="317">
+              <caret line="45" column="31" lean-forward="true" selection-start-line="45" selection-start-column="31" selection-end-line="45" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -353,7 +353,7 @@
       <workItem from="1639919107450" duration="5239000" />
       <workItem from="1639994840662" duration="1494000" />
       <workItem from="1639996516820" duration="2647000" />
-      <workItem from="1640701171600" duration="1200000" />
+      <workItem from="1640701171600" duration="1285000" />
     </task>
     <task id="LOCAL−00001" summary="VCG_NoCost">
       <created>1639669833158</created>
@@ -365,7 +365,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="82420000" />
+    <option name="totallyTimeSpent" value="82505000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
@@ -898,8 +898,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/strategies.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+        <state relative-caret-position="317">
+          <caret line="45" column="31" lean-forward="true" selection-start-line="45" selection-start-column="31" selection-end-line="45" selection-end-column="31" />
         </state>
       </provider>
     </entry>

@@ -44,6 +44,8 @@ def priceAdjusting(agent):
                 bids[i] *= 1.05
             else:
                 bids[i] *= 0.95
+                if bids[i]<agent.true_evaluation[i]:
+                    bids[i] = agent.true_evaluation[i]
     agent.last_adjusting_bid = copy.deepcopy(bids)
     return bids
 
