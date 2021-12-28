@@ -12,28 +12,40 @@ import numpy as np
 
 
 # pure strategies
-def pureStrategy5PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(true_evaluation)
+def pureStrategy5PercentHigher(agent):
+    bids_curve = copy.deepcopy(agent.true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.05
     return bids_curve
 
 
-def pureStrategy10PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(true_evaluation)
+def pureStrategy10PercentHigher(agent):
+    bids_curve = copy.deepcopy(agent.true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.10
     return bids_curve
 
-def pureStrategy15PercentHigher(true_evaluation):
-    bids_curve = copy.deepcopy(true_evaluation)
+def pureStrategy15PercentHigher(agent):
+    bids_curve = copy.deepcopy(agent.true_evaluation)
     for bid in bids_curve:
         bid[1] *= 1.15
     return bids_curve
 
-def pureStrategyBidTruthfully(true_evaluation):
-    return copy.deepcopy(true_evaluation)
+def pureStrategyBidTruthfully(agent):
+    return copy.deepcopy(agent.true_evaluation)
 
+def priceAdjusting(agent):
+    bids = copy.deepcopy(agent.bids_curve)
+    if agent.last_adjusting_payoff is not None:
+        last_payoff = agent.last_adjusting_payoff
+        for i, bid in enumerate(bids):
+            last_payoff -= bid
+            if last_payoff > 0:
+                bids[i] *= 1.05
+            else:
+                bids[i] *= 0.95
+    agent.last_adjusting_bid = copy.deepcopy(bids)
+    return bids
 
 # probabilistic mix of pure strategies
 # input sorted probabilities so that the numbers

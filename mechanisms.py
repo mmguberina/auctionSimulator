@@ -92,6 +92,8 @@ def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch
     for i, agent in enumerate(agents):
         #agent.payoff_history.append(payoffs[i])
         agent.payoff_history[runs_per_strategy_update * epoch + run_of_strategy] = payoffs[i]
+        if agent.last_strategy == 2:
+            agent.last_adjusting_payoff = payoffs[i]
 
 def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
                      runs_per_strategy_update, run_of_strategy):

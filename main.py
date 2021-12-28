@@ -3,6 +3,7 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
 import matplotlib.pyplot as plt
+import statistics
 
 from agents import *
 from market_clearing import *
@@ -16,7 +17,7 @@ payment_methods = ["uniform_pricing"]
 runs_per_strategy_update = 100  # Example for simple strategies
 # (might need other criteria with more complex strategies)
 # define termination criteria
-max_epochs = 200  # Just for testing with simple termination criteria
+max_epochs = 20  # Just for testing with simple termination criteria
 whole_epochs_runs = 20
 
 # let's start with the following
@@ -74,7 +75,7 @@ if __name__ == "__main__":
                 # Update strategy position
                 for agent in agents:
                     agent.epoch_payoff_history[epoch] = \
-                        mean(agent.payoff_history[runs_per_strategy_update*epoch:runs_per_strategy_update*(epoch+1)])
+                        statistics.mean(agent.payoff_history[runs_per_strategy_update*epoch:runs_per_strategy_update*(epoch+1)])
                 PSO(agents, max_epochs, epoch)
                 epoch += 1
 

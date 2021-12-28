@@ -52,6 +52,18 @@ class Agent:
      strategy_mix_history
      ----------------
      - history of strategy mixes
+
+     last_strategy
+     -------------
+     - index of last strategy agent used
+
+     last_adjusting_bid
+     -----------
+     - Memory for last bid using priceAdjusting
+
+     last_adjusting_payoff
+     ----------
+     - Memory for last adjusting payoff
     """
 
     def __init__(self, initType, init_strategy_mix, agent_num, max_epochs, runs_per_strategy_update):
@@ -61,7 +73,7 @@ class Agent:
             # create self.strategies = [strategy1, ...]
             # and a list of equal length denoting how probable each strategy should be.
             # don't forget that the probabilities must sum to 1!
-            self.strategy = [pureStrategy5PercentHigher, pureStrategy15PercentHigher, pureStrategyBidTruthfully]
+            self.strategy = [pureStrategyBidTruthfully, pureStrategy15PercentHigher, priceAdjusting]
             #if it is the first payment method, we randomize the initial point
             if len(init_strategy_mix) != 5:
                 #rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
@@ -74,7 +86,10 @@ class Agent:
                 self.strategy_mix = copy.deepcopy(init_strategy_mix[agent_num])
             self.best_strategy = copy.deepcopy(self.strategy_mix)
             self.best_utility = 0
-            self.bids_curve = self.strategy[0](self.true_evaluation)
+            self.bids_curve = self.strategy[0](self)
+            self.last_strategy = 0
+            self.last_adjusting_bid = copy.deepcopy(self.bids_curve)
+            self.last_adjusting_payoff = None
             self.payoff_history = [None]*(max_epochs * runs_per_strategy_update)
             self.epoch_payoff_history = [None]*max_epochs
             #self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
@@ -86,7 +101,8 @@ class Agent:
 
     def generateBid(self):
         chosen_strategy = random.choices(self.strategy, weights=self.strategy_mix,k=1)[0]
-        self.bids_curve = chosen_strategy(self.true_evaluation)
+        self.last_strategy = self.strategy.index(chosen_strategy)
+        self.bids_curve = chosen_strategy(self)
 
 def updateStrategy(self):
     """
