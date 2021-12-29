@@ -14,11 +14,11 @@ from visualising import *
 
 payment_methods = ["uniform_pricing"]
 # Might want to move this to the runs.py file,
-runs_per_strategy_update = 100  # Example for simple strategies
+runs_per_strategy_update = 1200  # Example for simple strategies
 # (might need other criteria with more complex strategies)
 # define termination criteria
-max_epochs = 20  # Just for testing with simple termination criteria
-whole_epochs_runs = 20
+max_epochs = 1  # Just for testing with simple termination criteria
+whole_epochs_runs = 10
 
 # let's start with the following
 # 1 buyer, static demand curve

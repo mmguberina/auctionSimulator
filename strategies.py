@@ -39,13 +39,13 @@ def priceAdjusting(agent):
     if agent.last_adjusting_payoff is not None:
         last_payoff = agent.last_adjusting_payoff
         for i, bid in enumerate(bids):
-            last_payoff -= bid
+            last_payoff -= bid[0]*bid[1]
             if last_payoff >= 0:
-                bids[i] *= 1.05
+                bids[i][1] *= 1.05
             else:
-                bids[i] *= 0.95
-                if bids[i]<agent.true_evaluation[i]:
-                    bids[i] = agent.true_evaluation[i]
+                bids[i][1] *= 0.95
+                if bids[i][1]<agent.true_evaluation[i][1]:
+                    bids[i][1] = agent.true_evaluation[i][1]
     agent.last_adjusting_bid = copy.deepcopy(bids)
     return bids
 
