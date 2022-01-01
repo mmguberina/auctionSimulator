@@ -12,13 +12,13 @@ from strategies import *
 from strategy_updating_algorithms import *
 from visualising import *
 
-payment_methods = ["uniform_pricing"]
+payment_methods = ["uniform_pricing","VCG_nima"]
 # Might want to move this to the runs.py file,
-runs_per_strategy_update = 1200  # Example for simple strategies
+runs_per_strategy_update = 250  # Example for simple strategies
 # (might need other criteria with more complex strategies)
 # define termination criteria
-max_epochs = 5  # Just for testing with simple termination criteria
-whole_epochs_runs = np.arange(10,20,1)
+max_epochs = 200  # Just for testing with simple termination criteria
+whole_epochs_runs = 20
 
 # let's start with the following
 # 1 buyer, static demand curve
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     n_of_demand_bids = 20
     demand_curve = [[25/n_of_demand_bids,i] for i in list(np.linspace(5, 1, num = n_of_demand_bids))]
 
-    for epochs_run in whole_epochs_runs:
+    for epochs_run in range(whole_epochs_runs):
         # Initialize agents
         n_agents = 5
         init_strategy_mix = [] #the initial strategy mix for the agents
