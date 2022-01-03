@@ -10,7 +10,7 @@ import pandas as pd
 def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
     column_names = ["s_mix","s_mix_2D","payoff"]
     agents_list = [i for i in range (n_agents)]
-    whole_epochs_runs_list = [i for i in range(whole_epochs_runs)]
+    #whole_epochs_runs_list = [i for i in range(whole_epochs_runs)]
     epochs_list = [i for i in range(max_epochs)]
 
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
@@ -47,6 +47,7 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
                         pd.Series([np.matmul(strategy_mix, mapping_coeffs.T) for strategy_mix in
                           agent.strategy_mix_history[:-1]]).values
     return results, results_SW
+
 
 def plotAgentsChanges2D_all(results):
     for payment_method in results.index.levels[0]:
@@ -188,9 +189,6 @@ def plotSW_all(results_SW):
     for epochs_run in results_SW.index.levels[1]:
         plt.figure()
         for payment_method in results_SW.index.levels[0]:
-            if payment_method == results_SW.index.levels[0][0]:
-                plt.plot(results_SW.loc[(payment_method, epochs_run), "SW"],label=payment_method)
-            else:
                 plt.plot(results_SW.loc[(payment_method, epochs_run), "SW"],label=payment_method)
         plt.xlabel("Epoch")
         plt.ylabel("SW [SEK]")
@@ -209,6 +207,22 @@ def plotPayoffs (agents,payment_method,runs_per_strategy_update):
         plt.legend()
 def plotPayoffs_all (results):
 
+    results_grouped_mean = results.groupby(level=[0,2,3])["payoff"].mean()
+    plt.figure()
+    color_list= ['tab:blue', 'tab:orange','tab:green','tab:red','tab:purple','tab:brown','tab:pink','tab:gray',\
+                 'tab:olive','tab:cyan']
+    for payment_method in results.index.levels[0]:
+        for agent_number in results.index.levels[2]:
+            if payment_method == results.index.levels[0][0]:
+                plt.plot(results_grouped_mean.loc[payment_method,agent_number],linestyle="-",\
+                         color=color_list[agent_number], label=payment_method+str(agent_number))
+            else:
+                plt.plot(results_grouped_mean.loc[payment_method, agent_number], linestyle=":",\
+                         color=color_list[agent_number], label=payment_method+str(agent_number))
+    plt.xlabel("Epoch")
+    plt.ylabel("Agents Payoff [SEK]")
+    #plt.title("Average of SW over the runs")
+    plt.show()
     for payment_method in results.index.levels[0]:
         for epochs_run in results.index.levels[1]:
             plt.figure()
