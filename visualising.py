@@ -44,12 +44,16 @@ def plotAgentsChanges2D_all(results):
             for agent_number in results.index.levels[2]:
                 x = [i[0] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
                 y = [i[1] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
-                plt.scatter(x,y,s=1,label='agent ' + str(agent_number),c=[i for i in range(len(x))],cmap='Blues')
+                plt.scatter(x[0:1],y[0:1],label="start")
+                plt.scatter(x[-1], y[-1],marker="s", label="end")
+                plt.scatter(x, y, s=1, c=[i ** 2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+                #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
         # ploting the edges of the triangle
         plt.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                  'k')
         cbar = plt.colorbar()
         cbar.set_label('Epoch')
+        plt.title(payment_method)
         plt.show()
 
 
@@ -161,6 +165,18 @@ def plotPayoffs (agents,payment_method,runs_per_strategy_update):
         plt.ylabel("Payoffs")
         plt.title(payment_method)
         plt.legend()
+def plotPayoffs_all (results):
+
+    for payment_method in results.index.levels[0]:
+        for epochs_run in results.index.levels[1]:
+            plt.figure()
+            for agent_number in results.index.levels[2]:
+                plt.plot(results.loc[(payment_method,epochs_run,agent_number),"payoff"],linewidth=1, label='agent ' + str(agent_number))
+                plt.xlabel("Epoch")
+                plt.ylabel("Payoffs")
+                plt.title(payment_method+"_"+str(epochs_run))
+                #plt.legend()
+
 
 def plotAgentChanges2D(agents,payment_method):
 
