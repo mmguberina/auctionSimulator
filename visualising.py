@@ -17,15 +17,27 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
         # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
     mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
 
-    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs_list ,agents_list, epochs_list],\
+    #results for the agent data
+    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs ,agents_list, epochs_list],\
                                                 names=["payment_method", "n_whole_epoch","agent","epoch"])
     results = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
+    #results for the SW
+    column_names = ["SW"]
+    MultiIndex_obj =pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs , epochs_list],\
+                                                names=["payment_method", "n_whole_epoch","epoch"])
+    results_SW = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
+                                   columns=column_names, index=MultiIndex_obj)
     for payment_method in payment_methods:
-        for epochs_run in range(whole_epochs_runs):
+        for epochs_run in whole_epochs_runs:
             with open('Results\\agents_' + payment_method + "_" + str(max_epochs) + \
                       "epochs_" + str(runs_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
                 agents = pickle.load(inp)
+                SW_history = pickle.load (inp)
+
+                np_SW_history = np.array(SW_history)
+                results_SW.loc[(payment_method,epochs_run),"SW"] = \
+                    np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
                 for agent_number, agent in enumerate(agents):
                     results.loc[(payment_method,epochs_run,agent_number),"s_mix"] =\
                         pd.Series(agent.strategy_mix_history[:-1]).values
@@ -34,8 +46,7 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
                     results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"] = \
                         pd.Series([np.matmul(strategy_mix, mapping_coeffs.T) for strategy_mix in
                           agent.strategy_mix_history[:-1]]).values
-
-    return results
+    return results, results_SW
 
 def plotAgentsChanges2D_all(results):
     for payment_method in results.index.levels[0]:
@@ -44,15 +55,20 @@ def plotAgentsChanges2D_all(results):
             for agent_number in results.index.levels[2]:
                 x = [i[0] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
                 y = [i[1] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
-                plt.scatter(x[0:1],y[0:1],label="start")
-                plt.scatter(x[-1], y[-1],marker="s", label="end")
-                plt.scatter(x, y, s=1, c=[i ** 2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+                plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r")
+                plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r")
+                plt.scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
                 #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
         # ploting the edges of the triangle
         plt.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                  'k')
         cbar = plt.colorbar()
-        cbar.set_label('Epoch')
+        cbar.set_label('Epoch^2')
+        plt.xlim(-0.1,1.1)
+        plt.ylim(-0.1,math.sin(math.pi / 3)+0.1)
+        plt.annotate("TT",(-0.03,0),annotation_clip=False)
+        plt.annotate("+15%", (1.01, 0),annotation_clip=False)
+        plt.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
         plt.title(payment_method)
         plt.show()
 
@@ -155,6 +171,32 @@ def plotSW(SW_history,runs_per_strategy_update,payment_method):
     plt.title(payment_method)
 
     plt.show()
+
+def plotSW_all(results_SW):
+    #Plotting the average of SW over all the whole-epoch-runs
+    results_SW_grouped_mean = results_SW.groupby(level=[0,2])["SW"].mean()
+    plt.figure()
+    for payment_method in results_SW.index.levels[0]:
+        plt.plot(results_SW_grouped_mean.loc[payment_method],label=payment_method)
+    plt.xlabel("Epoch")
+    plt.ylabel("SW [SEK]")
+    plt.legend()
+    plt.title("Average of SW over the runs")
+    plt.show()
+
+    # Plotting the SW for each whole-epoch-run
+    for epochs_run in results_SW.index.levels[1]:
+        plt.figure()
+        for payment_method in results_SW.index.levels[0]:
+            if payment_method == results_SW.index.levels[0][0]:
+                plt.plot(results_SW.loc[(payment_method, epochs_run), "SW"],label=payment_method)
+            else:
+                plt.plot(results_SW.loc[(payment_method, epochs_run), "SW"],label=payment_method)
+        plt.xlabel("Epoch")
+        plt.ylabel("SW [SEK]")
+        plt.title("Run: "+str(epochs_run))
+        plt.legend()
+        plt.show()
 
 def plotPayoffs (agents,payment_method,runs_per_strategy_update):
     plt.figure()
