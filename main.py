@@ -14,11 +14,12 @@ from visualising import *
 
 payment_methods = ["uniform_pricing","VCG_nima"]
 # Might want to move this to the runs.py file,
-runs_per_strategy_update = 250  # Example for simple strategies
+runs_per_strategy_update = 1000  # Example for simple strategies
 # (might need other criteria with more complex strategies)
 # define termination criteria
-max_epochs = 200  # Just for testing with simple termination criteria
-whole_epochs_runs = 20
+max_epochs = 5000  # Just for testing with simple termination criteria
+whole_epochs_runs = np.arange(20,25,1)
+#whole_epochs_runs = [0,5,10,15,20]
 
 # let's start with the following
 # 1 buyer, static demand curve
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     n_of_demand_bids = 20
     demand_curve = [[25/n_of_demand_bids,i] for i in list(np.linspace(5, 1, num = n_of_demand_bids))]
 
-    for epochs_run in range(whole_epochs_runs):
+    for epochs_run in whole_epochs_runs:
         # Initialize agents
         n_agents = 5
         init_strategy_mix = [] #the initial strategy mix for the agents
@@ -81,7 +82,7 @@ if __name__ == "__main__":
 
             SavingAgents(agents, SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run)
     results = pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs)
-    plotAgentsChanges2D_all(results)
+    #plotAgentsChanges2D_all(results)
         #plotSupplyDemand(agents, demand_curve, payment_method, epochs_run)
         #plotAgentChanges2D(agents, payment_method, epochs_run)
         #plotSW(SW_history, runs_per_strategy_update, payment_method, epochs_run)
