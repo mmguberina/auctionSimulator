@@ -265,6 +265,125 @@ def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strateg
     ax.plot(x[~inside], y[~inside], 'kx')
     plt.show(block=False)
 '''
+def plotAgentsChanges2D_all_histogram(results):
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    for payment_method in results.index.levels[0]:
+        fig, ax = plt.subplots()
+        for epochs_run in results.index.levels[1]:
+            for agent_number in results.index.levels[2]:
+                slice_pd_df = results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]
+                x = [i[0] for i in slice_pd_df]
+                y = [i[1] for i in slice_pd_df]
+                #plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r",zorder=4,alpha=0.6)
+                #plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r",zorder=4,alpha=0.6)
+                ax.scatter(x, y,s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+                #plt.scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+        slice_pd_df = results.loc[(payment_method),"s_mix_2D"]
+        x_histogram = [i[0] for i in slice_pd_df]
+        y_histogram = [i[1] for i in slice_pd_df]
+        # create new axes on the right and on the top of the current axes
+        divider = make_axes_locatable(ax)
+        # below height and pad are in inches
+        ax_histx = divider.append_axes("top", 1.2, pad=0.1, sharex=ax)
+        ax_histy = divider.append_axes("right", 1.2, pad=0.1, sharey=ax)
+
+        # make some labels invisible
+        ax_histx.xaxis.set_tick_params(labelbottom=False)
+        ax_histy.yaxis.set_tick_params(labelleft=False)
+
+        # now determine nice limits by hand:
+        binwidth = 0.02
+        #xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
+        #lim = (int(xymax / binwidth) + 1) * binwidth
+
+        bins_x = np.arange(0, 1+binwidth, binwidth)
+        bins_y = np.arange(0, math.sin(math.pi / 3)+binwidth, binwidth)
+        ax_histx.hist(x_histogram, bins=bins_x)
+        ax_histy.hist(y_histogram, bins=bins_y, orientation='horizontal')
+
+        # the xaxis of ax_histx and yaxis of ax_histy are shared with ax,
+        # thus there is no need to manually adjust the xlim and ylim of these
+        # axis.
+
+        #ax_histx.set_yticks([0, 50, 100])
+        #ax_histy.set_xticks([0, 50, 100])
+        # ploting the edges of the triangle
+        ax.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                 'k')
+        cbar = fig.colorbar(im,ax=ax)
+        cbar.set_label('Epoch^2')
+        ax.set_xlim(-0.1,1.1)
+        ax.set_ylim(-0.1,math.sin(math.pi / 3)+0.1)
+        ax.annotate("TT",(-0.03,0),annotation_clip=False)
+        ax.annotate("+15%", (1.01, 0),annotation_clip=False)
+        ax.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
+        fig.suptitle("Strategy mix for all agents, payment method: "+payment_method)
+        fig.show()
+        #if saving_switch == 1:
+        #    plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\histogram_Strategy mix for all agents_"+payment_method+".pdf")
+        #    plt.savefig(
+        #        "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\histogram_Strategy mix for all agents_" + payment_method + ".png")
+
+
+    #different colors for different agents to check why some agents' payoff is less, withOUT initial and final strategies
+    cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
+    color_list= ['tab:blue', 'tab:orange','tab:green','tab:red','tab:purple','tab:brown','tab:pink','tab:gray',\
+                 'tab:olive','tab:cyan']
+    for payment_method in results.index.levels[0]:
+        fig, axs = plt.subplots(3, 2)
+        for agent_number in results.index.levels[2]:
+            for epochs_run in results.index.levels[1]:
+                slice_pd_dff = results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]
+                x = [i[0] for i in slice_pd_dff]
+                y = [i[1] for i in slice_pd_dff]
+                #axs[agent_number//2,agent_number%2].scatter(x[0:1], y[0:1], marker="x", label="start", color="r",zorder=5)
+                #axs[agent_number//2,agent_number%2].scatter(x[-1], y[-1], marker="s", label="end", color="r",zorder=5)
+                im = axs[agent_number//2,agent_number%2].scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap=cmap_list[agent_number], alpha=0.6)
+                # plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
+            # ploting the edges of the triangle
+            slice_pd_df = results.loc[(payment_method,results.index.levels[1],\
+                                                      agent_number,results.index.levels[3]), "s_mix_2D"]
+            x_histogram = [i[0] for i in slice_pd_df]
+            y_histogram = [i[1] for i in slice_pd_df]
+            # create new axes on the right and on the top of the current axes
+            divider = make_axes_locatable(axs[agent_number//2,agent_number%2])
+            # below height and pad are in inches
+            ax_histx = divider.append_axes("top", 1.2, pad=0.1, sharex=axs[agent_number//2,agent_number%2])
+            ax_histy = divider.append_axes("right", 1.2, pad=0.1, sharey=axs[agent_number//2,agent_number%2])
+
+            # make some labels invisible
+            ax_histx.xaxis.set_tick_params(labelbottom=False)
+            ax_histy.yaxis.set_tick_params(labelleft=False)
+
+            # now determine nice limits by hand:
+            binwidth = 0.02
+            # xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
+            # lim = (int(xymax / binwidth) + 1) * binwidth
+
+            bins_x = np.arange(0, 1 + binwidth, binwidth)
+            bins_y = np.arange(0, math.sin(math.pi / 3) + binwidth, binwidth)
+            ax_histx.hist(x_histogram, bins=bins_x, color=color_list[agent_number])
+            ax_histy.hist(y_histogram, bins=bins_y, orientation='horizontal',color=color_list[agent_number])
+            axs[agent_number//2,agent_number%2].plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                     'k')
+            cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
+            cbar.set_label('Epoch^2')
+            axs[agent_number//2,agent_number%2].set_xlim([-0.1, 1.1])
+            axs[agent_number//2,agent_number%2].set_ylim([-0.1, math.sin(math.pi / 3) + 0.1])
+            axs[agent_number//2,agent_number%2].annotate("TT", (-0.03, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("+15%", (1.01, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("PA", (0.5, math.sin(math.pi / 3) + 0.03), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].set_title("Agent: "+str(agent_number))
+        fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
+        fig.delaxes(axs[2,1])
+        #if saving_switch == 1:
+        #    plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+".pdf")
+        #    plt.savefig(
+        #        "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + ".png")
+        fig.show()
+
+
 def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run):
     if not os.path.exists('Results'):
         os.makedirs('Results')
