@@ -49,15 +49,19 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
     return results, results_SW
 
 
-def plotAgentsChanges2D_all(results):
+def plotAgentsChanges2D_all(results,saving_switch):
+    fig_size_all_agents_plot = (15,10)
+    fig_size_each_agent_plot = (15,15)
+
+    #all the agents with the same color_with final and start
     for payment_method in results.index.levels[0]:
-        plt.figure()
+        plt.figure(figsize=fig_size_all_agents_plot)
         for epochs_run in results.index.levels[1]:
             for agent_number in results.index.levels[2]:
                 x = [i[0] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
                 y = [i[1] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
-                plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r")
-                plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r")
+                plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r",zorder=4,alpha=0.6)
+                plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r",zorder=4,alpha=0.6)
                 plt.scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
                 #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
         # ploting the edges of the triangle
@@ -70,9 +74,115 @@ def plotAgentsChanges2D_all(results):
         plt.annotate("TT",(-0.03,0),annotation_clip=False)
         plt.annotate("+15%", (1.01, 0),annotation_clip=False)
         plt.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
+        plt.title("Strategy mix for all agents, payment method: "+payment_method)
+        plt.show()
+        if saving_switch == 1:
+            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_"+payment_method+"_with initial and final strategies.pdf")
+            plt.savefig(
+                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_" + payment_method + "_with initial and final strategies.png")
+    # all the agents with the same color_withOUT final and start
+    for payment_method in results.index.levels[0]:
+        plt.figure(figsize=fig_size_all_agents_plot)
+        for epochs_run in results.index.levels[1]:
+            for agent_number in results.index.levels[2]:
+                x = [i[0] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
+                y = [i[1] for i in results.loc[(payment_method,epochs_run,agent_number),"s_mix_2D"]]
+                #plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r",zorder=4,alpha=0.6)
+                #plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r",zorder=4,alpha=0.6)
+                plt.scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+                #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
+        # ploting the edges of the triangle
+        plt.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                 'k')
+        cbar = plt.colorbar()
+        cbar.set_label('Epoch^2')
+        plt.xlim(-0.1,1.1)
+        plt.ylim(-0.1,math.sin(math.pi / 3)+0.1)
+        plt.annotate("TT",(-0.03,0),annotation_clip=False)
+        plt.annotate("+15%", (1.01, 0),annotation_clip=False)
+        plt.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
+        plt.title("Strategy mix for all agents, payment method: "+payment_method)
+        plt.show()
+        if saving_switch == 1:
+            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_"+payment_method+".pdf")
+            plt.savefig(
+                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_" + payment_method + ".png")
+    #different colors for different agents to check why some agents' payoff is less, with initial and final strategies
+    cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
+    for payment_method in results.index.levels[0]:
+        fig, axs = plt.subplots(3, 2,figsize=fig_size_each_agent_plot)
+        for agent_number in results.index.levels[2]:
+            for epochs_run in results.index.levels[1]:
+                x = [i[0] for i in results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]]
+                y = [i[1] for i in results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]]
+                axs[agent_number//2,agent_number%2].scatter(x[0:1], y[0:1], marker="x", label="start", color="r",zorder=5)
+                axs[agent_number//2,agent_number%2].scatter(x[-1], y[-1], marker="s", label="end", color="r",zorder=5)
+                im = axs[agent_number//2,agent_number%2].scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap=cmap_list[agent_number], alpha=0.6)
+                # plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
+            # ploting the edges of the triangle
+            axs[agent_number//2,agent_number%2].plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                     'k')
+            cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
+            cbar.set_label('Epoch^2')
+            axs[agent_number//2,agent_number%2].set_xlim([-0.1, 1.1])
+            axs[agent_number//2,agent_number%2].set_ylim([-0.1, math.sin(math.pi / 3) + 0.1])
+            axs[agent_number//2,agent_number%2].annotate("TT", (-0.03, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("+15%", (1.01, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("PA", (0.5, math.sin(math.pi / 3) + 0.03), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].set_title("Agent: "+str(agent_number))
+        fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
+        fig.delaxes(axs[2,1])
+        if saving_switch == 1:
+            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+"_with initial and final strategies.pdf")
+            plt.savefig(
+                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + "_with initial and final strategies.png")
+        fig.show()
+    #different colors for different agents to check why some agents' payoff is less, withOUT initial and final strategies
+    cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
+    for payment_method in results.index.levels[0]:
+        fig, axs = plt.subplots(3, 2,figsize=fig_size_each_agent_plot)
+        for agent_number in results.index.levels[2]:
+            for epochs_run in results.index.levels[1]:
+                x = [i[0] for i in results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]]
+                y = [i[1] for i in results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"]]
+                #axs[agent_number//2,agent_number%2].scatter(x[0:1], y[0:1], marker="x", label="start", color="r",zorder=5)
+                #axs[agent_number//2,agent_number%2].scatter(x[-1], y[-1], marker="s", label="end", color="r",zorder=5)
+                im = axs[agent_number//2,agent_number%2].scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap=cmap_list[agent_number], alpha=0.6)
+                # plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
+            # ploting the edges of the triangle
+            axs[agent_number//2,agent_number%2].plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                     'k')
+            cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
+            cbar.set_label('Epoch^2')
+            axs[agent_number//2,agent_number%2].set_xlim([-0.1, 1.1])
+            axs[agent_number//2,agent_number%2].set_ylim([-0.1, math.sin(math.pi / 3) + 0.1])
+            axs[agent_number//2,agent_number%2].annotate("TT", (-0.03, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("+15%", (1.01, 0), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].annotate("PA", (0.5, math.sin(math.pi / 3) + 0.03), annotation_clip=False)
+            axs[agent_number//2,agent_number%2].set_title("Agent: "+str(agent_number))
+        fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
+        fig.delaxes(axs[2,1])
+        if saving_switch == 1:
+            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+".pdf")
+            plt.savefig(
+                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + ".png")
+        fig.show()
+    #Plotting only the last epoch
+    '''
+    for payment_method in results.index.levels[0]:
+        plt.figure()
+        for epochs_run in results.index.levels[1]:
+            x = [i[0] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],np.arange(4999,5000)),"s_mix_2D"]]
+            y = [i[1] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],np.arange(4999,5000)),"s_mix_2D"]]
+            plt.scatter(x,y,label='Run' + str(epochs_run))
+            #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
+        # ploting the edges of the triangle
+        plt.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
+                 'k')
+        plt.legend()
         plt.title(payment_method)
         plt.show()
-
+    
 
 '''
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)

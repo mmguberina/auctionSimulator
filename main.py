@@ -20,6 +20,7 @@ runs_per_strategy_update = 1000  # Example for simple strategies
 max_epochs = 5000  # Just for testing with simple termination criteria
 #whole_epochs_runs = np.arange(20,25,1)
 whole_epochs_runs = [0,1,5,6,7,10,11,12,15,16,17,20,21,22]
+plot_saving_switch = 0
 
 # let's start with the following
 # 1 buyer, static demand curve
@@ -82,7 +83,7 @@ if __name__ == "__main__":
 
             SavingAgents(agents, SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run)
     results, results_SW = pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs)
-    #plotAgentsChanges2D_all(results)
+    #plotAgentsChanges2D_all(results,plot_saving_switch)
         #plotSupplyDemand(agents, demand_curve, payment_method, epochs_run)
         #plotAgentChanges2D(agents, payment_method, epochs_run)
         #plotSW(SW_history, runs_per_strategy_update, payment_method, epochs_run)
