@@ -184,7 +184,6 @@ def plotAgentsChanges2D_all(results,saving_switch):
         plt.show()
     
 
-'''
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
         # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
     mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
@@ -217,8 +216,8 @@ def plotAgentsChanges2D_all(results,saving_switch):
     cbar.set_label('Epoch')
     #plt.legend()
     plt.show()
-'''
-'''
+
+
 def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
     try:
         from astropy.convolution import Gaussian2DKernel, convolve
@@ -324,15 +323,18 @@ def plotPayoffs_all (results):
     for payment_method in results.index.levels[0]:
         for agent_number in results.index.levels[2]:
             if payment_method == results.index.levels[0][0]:
-                plt.plot(results_grouped_mean.loc[payment_method,agent_number],linestyle="-",\
+                plt.plot(results_grouped_mean.loc[payment_method,agent_number], linewidth=0.8, linestyle="-",\
                          color=color_list[agent_number], label=payment_method+str(agent_number))
             else:
-                plt.plot(results_grouped_mean.loc[payment_method, agent_number], linestyle=":",\
+                plt.plot(results_grouped_mean.loc[payment_method, agent_number], linewidth=0.8, linestyle=":",\
                          color=color_list[agent_number], label=payment_method+str(agent_number))
     plt.xlabel("Epoch")
     plt.ylabel("Agents Payoff [SEK]")
+    plt.legend()
     #plt.title("Average of SW over the runs")
     plt.show()
+
+
     for payment_method in results.index.levels[0]:
         for epochs_run in results.index.levels[1]:
             plt.figure()
