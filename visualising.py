@@ -107,6 +107,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
             plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_"+payment_method+".pdf")
             plt.savefig(
                 "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_" + payment_method + ".png")
+
     #different colors for different agents to check why some agents' payoff is less, with initial and final strategies
     cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
     for payment_method in results.index.levels[0]:
@@ -137,6 +138,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
             plt.savefig(
                 "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + "_with initial and final strategies.png")
         fig.show()
+
     #different colors for different agents to check why some agents' payoff is less, withOUT initial and final strategies
     cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
     for payment_method in results.index.levels[0]:
@@ -167,13 +169,15 @@ def plotAgentsChanges2D_all(results,saving_switch):
             plt.savefig(
                 "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + ".png")
         fig.show()
-    #Plotting only the last epoch
+
+    #Plotting only the lastest epochs
     '''
+    epoch_range = np.arange(4999,5000)
     for payment_method in results.index.levels[0]:
         plt.figure()
         for epochs_run in results.index.levels[1]:
-            x = [i[0] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],np.arange(4999,5000)),"s_mix_2D"]]
-            y = [i[1] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],np.arange(4999,5000)),"s_mix_2D"]]
+            x = [i[0] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],epoch_range),"s_mix_2D"]]
+            y = [i[1] for i in results.loc[(payment_method,epochs_run,results.index.levels[2],epoch_range),"s_mix_2D"]]
             plt.scatter(x,y,label='Run' + str(epochs_run))
             #plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
         # ploting the edges of the triangle
@@ -219,6 +223,19 @@ def plotAgentsChanges2D_all(results,saving_switch):
 
 
 def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
+    import scipy.interpolate
+    for payment_method in results.index.levels[0]:
+        x = [i[0] for i in results.loc[(payment_method),"s_mix_2D"]]
+        y = [i[1] for i in results.loc[(payment_method),"s_mix_2D"]]
+
+        deltaX = (max(x) - min(x)) / 10
+        deltaY = (max(y) - min(y)) / 10
+        xmin = min(x) - deltaX
+        xmax = max(x) + deltaXymin = min(y) - deltaY
+        ymax = max(y) + deltaYprint(xmin, xmax, ymin, ymax)  # Create meshgrid
+        xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+
+
     try:
         from astropy.convolution import Gaussian2DKernel, convolve
         astro_smooth = True
@@ -256,31 +273,7 @@ def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strateg
         pickle.dump(agents,outp)
         pickle.dump(SW_history, outp)
 
-def plotSW(SW_history,runs_per_strategy_update,payment_method):
-    np_SW_history = np.array(SW_history)
-    epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
-    plt.figure()
-    x = np.array([i for i in range(len(epoch_SW_average))])
-    y = epoch_SW_average
-    plt.plot(x,y)
 
-    #model1 = np.poly1d(np.polyfit(x, y, 1))
-    #model2 = np.poly1d(np.polyfit(x, y, 2))
-    model3 = np.poly1d(np.polyfit(x, y, 3))
-    #model4 = np.poly1d(np.polyfit(x, y, 4))
-    #model5 = np.poly1d(np.polyfit(x, y, 5))
-
-    #plt.plot(x, model1(x), color='green')
-    #plt.plot(x, model2(x), color='red')
-    plt.plot(x, model3(x), '--' , color='purple')
-    #plt.plot(x, model4(x), color='blue')
-    #plt.plot(x, model5(x), color='orange')
-
-    plt.xlabel("epoch")
-    plt.ylabel("Social welfare")
-    plt.title(payment_method)
-
-    plt.show()
 
 def plotSW_all(results_SW):
     #Plotting the average of SW over all the whole-epoch-runs
@@ -293,7 +286,7 @@ def plotSW_all(results_SW):
     plt.legend()
     plt.title("Average of SW over the runs")
     plt.show()
-
+"""
     # Plotting the SW for each whole-epoch-run
     for epochs_run in results_SW.index.levels[1]:
         plt.figure()
@@ -304,16 +297,8 @@ def plotSW_all(results_SW):
         plt.title("Run: "+str(epochs_run))
         plt.legend()
         plt.show()
+"""
 
-def plotPayoffs (agents,payment_method,runs_per_strategy_update):
-    plt.figure()
-    for idx, agent in enumerate(agents):
-        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
-        plt.plot([i for i in range(len(epoch_agent_payoff_average))],epoch_agent_payoff_average, label='agent_' + str(idx))
-        plt.xlabel("Epoch")
-        plt.ylabel("Payoffs")
-        plt.title(payment_method)
-        plt.legend()
 def plotPayoffs_all (results):
 
     results_grouped_mean = results.groupby(level=[0,2,3])["payoff"].mean()
@@ -331,87 +316,23 @@ def plotPayoffs_all (results):
     plt.xlabel("Epoch")
     plt.ylabel("Agents Payoff [SEK]")
     plt.legend()
-    #plt.title("Average of SW over the runs")
+    plt.title("Average of payoffs over the runs")
     plt.show()
 
-
+'''
     for payment_method in results.index.levels[0]:
         for epochs_run in results.index.levels[1]:
             plt.figure()
             for agent_number in results.index.levels[2]:
                 plt.plot(results.loc[(payment_method,epochs_run,agent_number),"payoff"],linewidth=1, label='agent ' + str(agent_number))
+                plt.xscale('log')
                 plt.xlabel("Epoch")
                 plt.ylabel("Payoffs")
                 plt.title(payment_method+"_"+str(epochs_run))
                 #plt.legend()
+'''
 
-
-def plotAgentChanges2D(agents,payment_method):
-
-    #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
-        # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
-    mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
-    #strategy mix history in 2D
-    strategy_mix_history_2D = np.array([[list(np.matmul(strategy_mix,mapping_coeffs.T)) for strategy_mix in agent.strategy_mix_history] for agent in agents])
-
-    plt.figure()
-    #for each agent plot the 2D, extract the x and y values and plot
-    for agent_number in range(len(agents)):
-        x = strategy_mix_history_2D[agent_number][:,0]
-        y = strategy_mix_history_2D[agent_number][:,1]
-        plt.scatter(x,y, s=4, label='agent_' + str(agent_number))
-    #ploting the edges of the triangle
-    plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
-    plt.title(payment_method)
-    plt.legend()
-    plt.show()
-
-
-
-def plotAgentsChanges3D(agents):
-    ax = plt.figure().add_subplot(projection='3d')
-    ax.set_xlim([0, 1])
-    ax.set_ylim([0, 1])
-    ax.set_zlim([0, 1])
-
-    ax.set_xlabel("pureStrategy5PercentHigher")
-    ax.set_ylabel("pureStrategy15PercentHigher")
-    ax.set_zlabel("pureStrategyBidTruthfully")
-
-    t = np.arange(len(agents[0].strategy_mix_history))
-    for i, agent in enumerate(agents):
-        strategy_mix_history = np.array(agent.strategy_mix_history)
-        ax.plot(strategy_mix_history[:, 0], strategy_mix_history[:, 1], strategy_mix_history[:, 2], label='agent_' + str(i))
-
-
-    plt.show()
-
-"""
-Not fully functional yet, seems the simple way with a rotational matrix didn't work out yet
-For now same as plotAgentsChange3D but with locked axis to 0-1 range
-"""
-def plotAgentsChanges2D(agents):
-
-
-    R = np.array([[1/12*(6 + 2*np.sqrt(3)) , 1/12*(2*np.sqrt(3) - 6) , -1/np.sqrt(3)],
-                    [1/12*(2*np.sqrt(3) - 6), 1/12*(6 + 2*np.sqrt(3)), -1/np.sqrt(3)],
-                    [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]])
-
-    ax = plt.figure().add_subplot(projection='3d')
-
-    t = np.arange(len(agents[0].strategy_mix_history))
-    for i, agent in enumerate(agents):
-        strategy_mix_history = np.array(agent.strategy_mix_history)
-        #strategy_mix_history = np.array([np.matmul(A,R) for A in strategy_mix_history])
-        ax.plot(strategy_mix_history[:, 0], strategy_mix_history[:, 1], strategy_mix_history[:, 2], label='agent_' + str(i))
-
-    ax.set_xlim(xmin=0,xmax=1)
-    ax.set_ylim(ymin=0,ymax=1)
-    ax.set_zlim(zmin=0,zmax=1)
-    plt.show()
-
-
-"""
+"""                
 Plots the latest supply/demand curves
 """
 def plotSupplyDemand(agents, demand_curve,payment_method):
@@ -451,3 +372,110 @@ def plotSupplyDemand(agents, demand_curve,payment_method):
     plt.plot(x_points_supply, y_points_supply, label='Supply')
     plt.title(payment_method)
     plt.show(block=False)
+"""__________________________________________________
+-----------------------old plots
+__________________________________________________
+
+
+def plotSW(SW_history,runs_per_strategy_update,payment_method):
+    np_SW_history = np.array(SW_history)
+    epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
+    plt.figure()
+    x = np.array([i for i in range(len(epoch_SW_average))])
+    y = epoch_SW_average
+    plt.plot(x,y)
+
+    #model1 = np.poly1d(np.polyfit(x, y, 1))
+    #model2 = np.poly1d(np.polyfit(x, y, 2))
+    model3 = np.poly1d(np.polyfit(x, y, 3))
+    #model4 = np.poly1d(np.polyfit(x, y, 4))
+    #model5 = np.poly1d(np.polyfit(x, y, 5))
+
+    #plt.plot(x, model1(x), color='green')
+    #plt.plot(x, model2(x), color='red')
+    plt.plot(x, model3(x), '--' , color='purple')
+    #plt.plot(x, model4(x), color='blue')
+    #plt.plot(x, model5(x), color='orange')
+
+    plt.xlabel("epoch")
+    plt.ylabel("Social welfare")
+    plt.title(payment_method)
+
+    plt.show()
+def plotPayoffs (agents,payment_method,runs_per_strategy_update):
+    plt.figure()
+    for idx, agent in enumerate(agents):
+        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
+        plt.plot([i for i in range(len(epoch_agent_payoff_average))],epoch_agent_payoff_average, label='agent_' + str(idx))
+        plt.xlabel("Epoch")
+        plt.ylabel("Payoffs")
+        plt.title(payment_method)
+        plt.legend()
+def plotAgentChanges2D(agents,payment_method):
+
+    #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
+        # 6 eq. 6 unknowns --solution--> a=0,b=1,c=0.5 d=0,e=0,f=sin(pi/3)
+    mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
+    #strategy mix history in 2D
+    strategy_mix_history_2D = np.array([[list(np.matmul(strategy_mix,mapping_coeffs.T)) for strategy_mix in agent.strategy_mix_history] for agent in agents])
+
+    plt.figure()
+    #for each agent plot the 2D, extract the x and y values and plot
+    for agent_number in range(len(agents)):
+        x = strategy_mix_history_2D[agent_number][:,0]
+        y = strategy_mix_history_2D[agent_number][:,1]
+        plt.plot(x,y, label='agent_' + str(agent_number))
+    #ploting the edges of the triangle
+    plt.plot([0,1],[0,0],'k',[0,0.5],[0,math.sin(math.pi/3)],'k',[1,0.5],[0,math.sin(math.pi/3)],'k')
+    plt.title(payment_method)
+    plt.legend()
+    plt.show()
+
+
+
+def plotAgentsChanges3D(agents):
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1])
+    ax.set_zlim([0, 1])
+
+    ax.set_xlabel("pureStrategy5PercentHigher")
+    ax.set_ylabel("pureStrategy15PercentHigher")
+    ax.set_zlabel("pureStrategyBidTruthfully")
+
+    t = np.arange(len(agents[0].strategy_mix_history))
+    for i, agent in enumerate(agents):
+        strategy_mix_history = np.array(agent.strategy_mix_history)
+        ax.plot(strategy_mix_history[:, 0], strategy_mix_history[:, 1], strategy_mix_history[:, 2], label='agent_' + str(i))
+
+
+    plt.show()
+
+
+#Not fully functional yet, seems the simple way with a rotational matrix didn't work out yet
+#For now same as plotAgentsChange3D but with locked axis to 0-1 range
+
+def plotAgentsChanges2D(agents):
+
+
+    R = np.array([[1/12*(6 + 2*np.sqrt(3)) , 1/12*(2*np.sqrt(3) - 6) , -1/np.sqrt(3)],
+                    [1/12*(2*np.sqrt(3) - 6), 1/12*(6 + 2*np.sqrt(3)), -1/np.sqrt(3)],
+                    [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]])
+
+    ax = plt.figure().add_subplot(projection='3d')
+
+    t = np.arange(len(agents[0].strategy_mix_history))
+    for i, agent in enumerate(agents):
+        strategy_mix_history = np.array(agent.strategy_mix_history)
+        #strategy_mix_history = np.array([np.matmul(A,R) for A in strategy_mix_history])
+        ax.plot(strategy_mix_history[:, 0], strategy_mix_history[:, 1], strategy_mix_history[:, 2], label='agent_' + str(i))
+
+    ax.set_xlim(xmin=0,xmax=1)
+    ax.set_ylim(ymin=0,ymax=1)
+    ax.set_zlim(zmin=0,zmax=1)
+    plt.show()
+
+
+
+
+"""
