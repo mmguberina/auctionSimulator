@@ -62,22 +62,24 @@ if __name__ == "__main__":
 
                     # Market clearing function
                     # supply_bids = [a.bids_curve for a in agents]
-                    supply_quantities_cleared_solution, demand_quantities_cleared_solution, m = marketClearing(agents,
-                                                                                                               demand_curve)
-                    SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
+                    supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
+                    SW_history[runs_per_strategy_update * epoch + run_of_strategy] = objective_value
                     if payment_method == "uniform_pricing":
-                        uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, \
-                                       epoch, runs_per_strategy_update, run_of_strategy)
-                    if payment_method == "VCG_nima_NoCost":
-                        VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
-                                        runs_per_strategy_update, run_of_strategy)
+                        payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
                     if payment_method == "VCG_nima":
-                        VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
-                                 runs_per_strategy_update, run_of_strategy)
+                        payoffs = VCG_nima(agents, demand_curve, objective_value)
+#                    if payment_method == "VCG_nima_NoCost":
+#                        VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared, epoch, \
+#                                        runs_per_strategy_update, run_of_strategy)
+
+                            
                 # Update strategy position
-                for agent in agents:
+                for i, agent in enumerate(agents):
+                    agent.payoff_history[runs_per_strategy_update * epoch + run_of_strategy] = payoffs[i]
+                    if agent.last_strategy == 2:
+                        agent.last_adjusting_payoff = payoffs[i]
                     agent.epoch_payoff_history[epoch] = \
-                        statistics.mean(agent.payoff_history[runs_per_strategy_update*epoch:runs_per_strategy_update*(epoch+1)])
+                        statistics.mean(agent.payoff_history[runs_per_strategy_update * epoch : runs_per_strategy_update*(epoch+1)])
                 PSO(agents, max_epochs, epoch)
                 epoch += 1
 

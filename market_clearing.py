@@ -3,6 +3,8 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
 import matplotlib.pyplot as plt
+from scipy.optimize import linprog
+import random
 
 """
 take bids and the demand
@@ -11,6 +13,53 @@ calculate the price
 calculate social welfare
 return final price(s) and social welfare
 """
+
+
+def marketClearingSciPy(agents, demand_curve):
+    # need to shuffle to get rid of LP solver quirks
+    random.shuffle(agents)
+    
+    allSellerBids = []
+    for i, agent in enumerate(agents):
+        for bid in agent.bids_curve:
+            # now bid is [quantity_i, price_i, agent_index]
+            allSellerBids.append(bid + [i] )
+
+    # equality constraint is sum sold - bought = 0
+    # in matrix form that can be written as a scalar product
+    # possibly need to make A_eq 2d and b_eq 1d (just add brackets)
+    A_eq = [[1] * len(allSellerBids) + [-1] * len(demand_curve)]
+    b_eq = [0]
+
+    # every bid needs can be cleared between 0 and its max
+#    l_b = [0] * (len(allSellerBids) + len(demand_curve))
+#    u_b = [bid[0] for bid in allSellerBids] + [bid[0] for bid in demand_curve]
+    # each x_i needs its pair of (l_b_i, u_b_i)
+    bounds = [(0, bid[0]) for bid in allSellerBids] + [(0, bid[0]) for bid in demand_curve]
+
+    # we're maximizing social welfare so the objective is:
+    # sum of bought * price - sold * price for each bid
+    # that's equivalent to minimizing the negative so we just multiply by 1
+    c = [bid[1] for bid in allSellerBids] + [-1 * bid[1] for bid in demand_curve]
+
+    result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs-ds')
+    # we have to multiply by -1 to get the objective function we actually want
+    objective_value = -1 * result.fun
+    # this is the dual value of the budget balance constraint aka uniform price
+    uniform_price = result.eqlin['marginals'][0]
+
+    supply_quantities_cleared = []
+    for i in range(len(allSellerBids)):
+        # = supply_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount, agent_index],...]
+        # result.x[i] is ok because the LP was constructed in this order
+        supply_quantities_cleared.append(
+                allSellerBids[i][0:2] + [result.x[i]] + [allSellerBids[i][2]])
+
+    return supply_quantities_cleared, objective_value, uniform_price
+
+    
+
+
 
 
 
@@ -173,7 +222,7 @@ def primal_multibid(bids_demand,bids_supply):
 
 
 def marketClearing(agents, demand_curve):
-
+    random.shuffle(agents)
     m = gp . Model ("CL_activation_primal_multibid")
     m.Params.LogToConsole = 0
     # j: the participant
@@ -229,3 +278,5 @@ def marketClearing(agents, demand_curve):
         # = deman_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount],...]
         demand_quantities_cleared_solution.append(demand_curve[i] + [var.x])
     return supply_quantities_cleared_solution, demand_quantities_cleared_solution, m
+
+
