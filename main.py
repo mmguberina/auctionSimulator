@@ -72,12 +72,13 @@ if __name__ == "__main__":
 #                        VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared, epoch, \
 #                                        runs_per_strategy_update, run_of_strategy)
 
+                    for i, agent in enumerate(agents):
+                        agent.payoff_history[runs_per_strategy_update * epoch + run_of_strategy] = payoffs[i]
+                        if agent.last_strategy == 2:
+                            agent.last_adjusting_payoff = payoffs[i]
                             
                 # Update strategy position
-                for i, agent in enumerate(agents):
-                    agent.payoff_history[runs_per_strategy_update * epoch + run_of_strategy] = payoffs[i]
-                    if agent.last_strategy == 2:
-                        agent.last_adjusting_payoff = payoffs[i]
+                for agent in agents:
                     agent.epoch_payoff_history[epoch] = \
                         statistics.mean(agent.payoff_history[runs_per_strategy_update * epoch : runs_per_strategy_update*(epoch+1)])
                 PSO(agents, max_epochs, epoch)
