@@ -27,8 +27,8 @@ def oneExperiment(task_queue, progress_queue):
         experiment_id  = task_queue.get()
 
         payment_methods = ["uniform_pricing", "VCG_nima"]
-        runs_per_strategy_update = 10
-        max_epochs = 50 
+        runs_per_strategy_update = 100
+        max_epochs = 500 
 
         n_of_demand_bids = 20
         # only 1 buyer

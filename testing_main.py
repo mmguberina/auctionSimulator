@@ -24,7 +24,7 @@ if __name__ == "__main__":
     agents = []
     init_strategy_mix = [] 
     for agent_num in range(n_agents):
-        agents.append(Agent("all_the_same", init_strategy_mix, agent_num, max_epochs, runs_per_strategy_update))
+        agents.append(Agent("all_the_same", max_epochs, runs_per_strategy_update))
 
 
     # Run runs_per_strategy_update times
@@ -32,9 +32,11 @@ if __name__ == "__main__":
         for a in agents:
             a.generateBid()
 
-        #supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
-        supply_quantities_cleared, objective_value, uniform_price = marketClearing(agents, demand_curve)
-#        SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
+        supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
+#        supply_quantities_cleared, objective_value, uniform_price = marketClearing(agents, demand_curve)
+        payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
+        #payoffs = VCG_nima(agents, demand_curve, supply_quantities_cleared, objective_value)
+        print(payoffs)
     # Update strategy position
 #    for agent in agents:
 #        agent.epoch_payoff_history[epoch] = \

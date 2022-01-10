@@ -21,7 +21,7 @@ if __name__ == "__main__":
         task_queue.put(task)
     
     progress_queue = mp.Queue()
-    bar = Bar('Processing', max=len(experiment_ids))
+    bar = Bar('Processing', max=len(experiment_ids) * 2) # times 2 for payment methods
 
     n_of_cores = mp.cpu_count()
     print("you have", n_of_cores, "cpu cores, select the number of processes you want - choose n <=", n_of_cores)

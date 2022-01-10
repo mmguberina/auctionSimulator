@@ -7,10 +7,10 @@ import pickle
 import os
 import pandas as pd
 
-def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
+def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, experiment_ids):
     column_names = ["s_mix","s_mix_2D","payoff"]
     agents_list = [i for i in range (n_agents)]
-    #whole_epochs_runs_list = [i for i in range(whole_epochs_runs)]
+    #experiment_ids_list = [i for i in range(experiment_ids)]
     epochs_list = [i for i in range(max_epochs)]
 
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
@@ -18,19 +18,22 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
     mapping_coeffs = np.array([[0,1,0.5],[0,0,math.sin(math.pi/3)]])
 
     #results for the agent data
-    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs ,agents_list, epochs_list],\
-                                                names=["payment_method", "n_whole_epoch","agent","epoch"])
+    MultiIndex_obj = pd.MultiIndex.from_product([
+        payment_methods,  experiment_ids ,agents_list, epochs_list],\
+        names=["payment_method", "n_whole_epoch","agent","epoch"])
     results = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
     #results for the SW
     column_names = ["SW"]
-    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs , epochs_list],\
-                                                names=["payment_method", "n_whole_epoch","epoch"])
+    MultiIndex_obj = pd.MultiIndex.from_product([
+        payment_methods,  experiment_ids , epochs_list],\
+        names=["payment_method", "n_whole_epoch","epoch"])
+
     results_SW = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
     for payment_method in payment_methods:
-        for epochs_run in whole_epochs_runs:
-            with open('Results\\agents_' + payment_method + "_" + str(max_epochs) + \
+        for epochs_run in experiment_ids:
+            with open('Results/agents_' + payment_method + "_" + str(max_epochs) + \
                       "epochs_" + str(runs_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
                 agents = pickle.load(inp)
                 SW_history = pickle.load (inp)
@@ -196,7 +199,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
 
     for payment_method in payment_methods:
         plt.figure()
-        for epochs_run in range(whole_epochs_runs):
+        for epochs_run in range(experiment_ids):
             # to load
             with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+\
                        "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'rb') as inp:
@@ -222,7 +225,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
     plt.show()
 
 
-def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs):
+def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, experiment_ids):
     import scipy.interpolate
     for payment_method in results.index.levels[0]:
         x = [i[0] for i in results.loc[(payment_method),"s_mix_2D"]]
