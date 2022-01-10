@@ -387,7 +387,7 @@ def plotAgentsChanges2D_all_histogram(results):
 def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run):
     if not os.path.exists('Results'):
         os.makedirs('Results')
-    with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+\
+    with open ('Results/agents_'+payment_method+"_"+str(max_epochs)+\
                "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'wb') as outp:
         pickle.dump(agents,outp)
         pickle.dump(SW_history, outp)
