@@ -29,7 +29,7 @@ def uniformPricing(agents, supply_quantities_cleared_solution, uniform_price):
 
 
 
-def VCG_nima (agents, demand_curve, supply_quantities_cleared_solution, objective_value):
+def VCG_nima(agents, demand_curve, supply_quantities_cleared_solution, objective_value):
     SW_grand_coalition = objective_value
 
     payoffs = [0] * len(agents)
@@ -39,11 +39,16 @@ def VCG_nima (agents, demand_curve, supply_quantities_cleared_solution, objectiv
         #calculating the marginal contribution to the social welfare
         #agents_without_i = copy.deepcopy(agents)
         #del agents_without_i[i]
-        _,_,objective_value_without_i = marketClearingSciPy(agents[:i] + agents[i+1:], demand_curve)
+        _,objective_value_without_i,_ = marketClearingSciPy(agents[:i] + agents[i+1:], demand_curve)
+#        print("obj_vals:", SW_grand_coalition, objective_value_without_i)
         marg_contribution[i] = SW_grand_coalition - objective_value_without_i
+#        print("marg_contribution")
+#        print(marg_contribution)
         #to calculate the declared cost
         filtered_solution_with_i = list(filter(lambda solution: solution[3] == i, supply_quantities_cleared_solution))
         declared_cost [i] = sum([i_bids [1]*i_bids [2] for i_bids in filtered_solution_with_i])
+#        print("declared_cost")
+#        print(declared_cost)
         #payoff calculation
         payoffs [i] = marg_contribution[i] + declared_cost[i]
 

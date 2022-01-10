@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
         supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
 #        supply_quantities_cleared, objective_value, uniform_price = marketClearing(agents, demand_curve)
-        payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
-        #payoffs = VCG_nima(agents, demand_curve, supply_quantities_cleared, objective_value)
+#        payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
+        payoffs = VCG_nima(agents, demand_curve, supply_quantities_cleared, objective_value)
         print(payoffs)
     # Update strategy position
 #    for agent in agents:
