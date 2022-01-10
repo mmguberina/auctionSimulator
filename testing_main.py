@@ -12,7 +12,7 @@ from strategies import *
 from strategy_updating_algorithms import *
 from visualising import *
 
-runs_per_strategy_update = 10000
+runs_per_strategy_update = 1000
 max_epochs = 1
 epoch = 0
 
@@ -32,15 +32,8 @@ if __name__ == "__main__":
         for a in agents:
             a.generateBid()
 
-#        supply_quantities_cleared_solution, demand_quantities_cleared_solution, m = marketClearing(agents,
-#                                                                                                   demand_curve)
-
-#        uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, \
-#                       epoch, runs_per_strategy_update, run_of_strategy)
-
-        supply_quantities_cleared_solution, demand_quantities_cleared_solution, result = marketClearingSciPy(agents,
-                                                                                                   demand_curve)
-#        exit()
+        #supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
+        supply_quantities_cleared, objective_value, uniform_price = marketClearing(agents, demand_curve)
 #        SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
     # Update strategy position
 #    for agent in agents:

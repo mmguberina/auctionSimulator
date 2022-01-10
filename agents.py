@@ -66,7 +66,7 @@ class Agent:
      - Memory for last adjusting payoff
     """
 
-    def __init__(self, initType, init_strategy_mix, agent_num, max_epochs, runs_per_strategy_update):
+    def __init__(self, initType, max_epochs, runs_per_strategy_update, init_strategy_mix=None, strategy=None):
         self.true_evaluation = [[1, i+1] for i in range(5)]
         # if you want a mixed strategy,
         # create self.strategies = [strategy1, ...]
@@ -76,9 +76,14 @@ class Agent:
             #rand_init = [random.randint(0, 10) for i in range(len(self.strategy))]
             #self.strategy_mix = [p / sum(rand_init) for p in rand_init]
 
-
-        if len(init_strategy_mix) != 5:
+        if strategy != None:
+            self.strategy = strategy
+        else:
             self.strategy = [pureStrategyBidTruthfully, pureStrategy15PercentHigher, priceAdjusting]
+
+        if init_strategy_mix != None:
+            self.strategy_mix = copy.deepcopy(init_strategy_mix)
+        else:
             if initType == "all_the_same":
                 self.strategy_mix = np.random.dirichlet(np.ones(len(self.strategy))/2,size=1)[0]
             if initType == "truthful":
@@ -87,10 +92,8 @@ class Agent:
                 self.strategy_mix = np.array([0, 1, 0])
             if initType == "same_sth":
                 self.strategy_mix = np.array([0.5, 0.4, 0.1])
-        else:
             #if it is not the first payment method, we used the initial strategy mix that was used in the first
                 #payment method
-            self.strategy_mix = copy.deepcopy(init_strategy_mix[agent_num])
 
         self.bids_curve = self.strategy[0](self)
         self.best_strategy = copy.deepcopy(self.strategy_mix)

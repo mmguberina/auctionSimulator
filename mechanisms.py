@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import copy
 
 
-from market_clearing import marketClearing
+from market_clearing import marketClearingSciPy
 
 """
 take agent contributions and social welfare
@@ -39,8 +39,8 @@ def VCG_nima (agents, demand_curve, supply_quantities_cleared_solution, objectiv
         #calculating the marginal contribution to the social welfare
         #agents_without_i = copy.deepcopy(agents)
         #del agents_without_i[i]
-        _,_,m_without_i = marketClearing(agents[:i]+agents[i+1:],demand_curve)
-        marg_contribution [i] = SW_grand_coalition - m_without_i.ObjVal
+        _,_,objective_value_without_i = marketClearingSciPy(agents[:i] + agents[i+1:], demand_curve)
+        marg_contribution[i] = SW_grand_coalition - objective_value_without_i
         #to calculate the declared cost
         filtered_solution_with_i = list(filter(lambda solution: solution[3] == i, supply_quantities_cleared_solution))
         declared_cost [i] = sum([i_bids [1]*i_bids [2] for i_bids in filtered_solution_with_i])

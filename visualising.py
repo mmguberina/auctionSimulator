@@ -24,7 +24,7 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
                                    columns=column_names, index=MultiIndex_obj)
     #results for the SW
     column_names = ["SW"]
-    MultiIndex_obj =pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs , epochs_list],\
+    MultiIndex_obj = pd.MultiIndex.from_product([payment_methods,  whole_epochs_runs , epochs_list],\
                                                 names=["payment_method", "n_whole_epoch","epoch"])
     results_SW = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
