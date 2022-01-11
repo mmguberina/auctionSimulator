@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for p in processes:
         p.start()
 
-    for i in range(len(experiment_ids)):
+    for i in range(len(experiment_ids) * 2):
         progress_queue.get()
         bar.next()
     bar.finish()

@@ -7,8 +7,8 @@ from visualising import *
 
 n_agents = 5
 payment_methods = ["uniform_pricing", "VCG_nima"]
-max_epochs = 500
-runs_per_strategy_update = 100
+max_epochs = 501
+runs_per_strategy_update = 101
 n_of_demand_bids = 20
 experiment_ids = [0,1,5,6,7,10,11,12,15,16,17,20,21,22]
 
@@ -19,6 +19,6 @@ plotAgentsChanges2D_all(results, saving_switch)
 
 #plotAgentsChanges2D_all_histogram(results)
 
-#plotSW_all(results_SW)
+plotSW_all(results_SW)
 
-#plotPayoffs_all(results)
+plotPayoffs_all(results)

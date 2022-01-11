@@ -1,0 +1,21 @@
+priority
+---------
+1. better saving of runs
+	- file with metadata
+	- each experiment in its own folder
+2. analyse how truthful they are
+	- in general
+	- per bid that's actually cleared
+3. runs with different demand and/or supply curves
+3. write literature review
+
+
+not priority
+------------
+1. save only iterations which happened in epoch
+2. clean up code even more
+3. run with different optimization algorithm, ex ga
+
+can't but wish i could
+-----------------------
+1. strategy space is a neural net trained with rl

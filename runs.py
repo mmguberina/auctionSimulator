@@ -27,8 +27,8 @@ def oneExperiment(task_queue, progress_queue):
         experiment_id  = task_queue.get()
 
         payment_methods = ["uniform_pricing", "VCG_nima"]
-        runs_per_strategy_update = 100
-        max_epochs = 500 
+        runs_per_strategy_update = 101
+        max_epochs = 501 
 
         n_of_demand_bids = 20
         # only 1 buyer
@@ -38,6 +38,7 @@ def oneExperiment(task_queue, progress_queue):
 
         # we want to start with the same strategy mixes for each payment method
         strategy = [pureStrategyBidTruthfully, pureStrategy15PercentHigher, priceAdjusting]
+        #strategy = [pureStrategyBidTruthfully, pureStrategy15PercentHigher, pureStrategy5PercentHigher]
         init_strategy_mixes = []
         for i in range(n_agents):
             init_strategy_mixes.append(list( # casting as list for proper initialization in agent class
