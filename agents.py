@@ -66,7 +66,7 @@ class Agent:
      - Memory for last adjusting payoff
     """
 
-    def __init__(self, initType, max_epochs, runs_per_strategy_update, init_strategy_mix=None, strategy=None):
+    def __init__(self, initType, max_epochs, auctions_per_strategy_update, init_strategy_mix=None, strategy=None):
         self.true_evaluation = [[1, i+1] for i in range(5)]
         # if you want a mixed strategy,
         # create self.strategies = [strategy1, ...]
@@ -101,7 +101,7 @@ class Agent:
         self.last_strategy = 0
         self.last_adjusting_bid = copy.deepcopy(self.bids_curve)
         self.last_adjusting_payoff = None
-        self.payoff_history = [None]*(max_epochs * runs_per_strategy_update)
+        self.payoff_history = [None]*(max_epochs * auctions_per_strategy_update)
         self.epoch_payoff_history = [None]*max_epochs
         #self.strategy_mix_history = [copy.deepcopy(self.strategy_mix)]
         self.strategy_mix_history = [None]*(max_epochs+1)

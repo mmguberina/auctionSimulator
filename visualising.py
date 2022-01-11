@@ -1,5 +1,4 @@
 import copy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -7,10 +6,20 @@ import pickle
 import os
 import pandas as pd
 
-def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, experiment_ids):
+def pandas_results(parameters):
+
+    experiment_id = parameters.experiment_id
+    run_ids = parameters.run_ids
+    payment_methods = parameters.payment_methods
+    max_epochs = parameters.max_epochs
+    auctions_per_strategy_update = parameters.auctions_per_strategy_update
+    n_agents = parameters.n_agents
+
+    dir_string = "Results/Experiment_" + experiment_id + "/"
+
     column_names = ["s_mix","s_mix_2D","payoff"]
     agents_list = [i for i in range (n_agents)]
-    #experiment_ids_list = [i for i in range(experiment_ids)]
+    #run_ids_list = [i for i in range(run_ids)]
     epochs_list = [i for i in range(max_epochs)]
 
     #mapping coefficients: (x,y,z) --> (x_2D=ax1+by1+cz1, y_2D=dx1+ey1+fy1)
@@ -19,40 +28,41 @@ def pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_upda
 
     #results for the agent data
     MultiIndex_obj = pd.MultiIndex.from_product([
-        payment_methods,  experiment_ids ,agents_list, epochs_list],\
+        payment_methods,  run_ids ,agents_list, epochs_list],\
         names=["payment_method", "n_whole_epoch","agent","epoch"])
     results = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
     #results for the SW
     column_names = ["SW"]
     MultiIndex_obj = pd.MultiIndex.from_product([
-        payment_methods,  experiment_ids , epochs_list],\
+        payment_methods,  run_ids , epochs_list],\
         names=["payment_method", "n_whole_epoch","epoch"])
 
     results_SW = pd.DataFrame(np.empty((len(MultiIndex_obj), len(column_names))) * np.nan, \
                                    columns=column_names, index=MultiIndex_obj)
     for payment_method in payment_methods:
-        for epochs_run in experiment_ids:
-            with open('Results/agents_' + payment_method + "_" + str(max_epochs) + \
-                      "epochs_" + str(runs_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
+        for epochs_run in run_ids:
+            with open(dir_string + 'agents_' + payment_method + "_" + str(max_epochs) + \
+                      "epochs_" + str(auctions_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
                 agents = pickle.load(inp)
                 SW_history = pickle.load (inp)
 
                 np_SW_history = np.array(SW_history)
                 results_SW.loc[(payment_method,epochs_run),"SW"] = \
-                    np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
+                    np.average(np_SW_history.reshape(-1, auctions_per_strategy_update), axis=1)
                 for agent_number, agent in enumerate(agents):
                     results.loc[(payment_method,epochs_run,agent_number),"s_mix"] =\
                         pd.Series(agent.strategy_mix_history[:-1]).values
                     results.loc[(payment_method,epochs_run,agent_number),"payoff"] =\
-                        np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
+                        np.average(np.array(agent.payoff_history).reshape(-1, auctions_per_strategy_update), axis=1)
                     results.loc[(payment_method, epochs_run, agent_number), "s_mix_2D"] = \
                         pd.Series([np.matmul(strategy_mix, mapping_coeffs.T) for strategy_mix in
                           agent.strategy_mix_history[:-1]]).values
     return results, results_SW
 
 
-def plotAgentsChanges2D_all(results,saving_switch):
+def plotAgentsChanges2D_all(experiment_id, results, saving_switch):
+    dir_string = "Results/Experiment_" + experiment_id + "/Plots/"
     fig_size_all_agents_plot = (15,10)
     fig_size_each_agent_plot = (15,15)
 
@@ -78,11 +88,12 @@ def plotAgentsChanges2D_all(results,saving_switch):
         plt.annotate("+15%", (1.01, 0),annotation_clip=False)
         plt.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
         plt.title("Strategy mix for all agents, payment method: "+payment_method)
-        plt.show()
         if saving_switch == 1:
-            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_"+payment_method+"_with initial and final strategies.pdf")
+            plt.savefig(dir_string + "Strategy_mix_for_all_agents_"+payment_method+"_with_initial_and_final_strategies.pdf")
             plt.savefig(
-                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_" + payment_method + "_with initial and final strategies.png")
+                dir_string + "Strategy_mix_for_all_agents_" + payment_method + "_with_initial_and_final_strategies.png")
+        else:
+            plt.show()
     # all the agents with the same color_withOUT final and start
     for payment_method in results.index.levels[0]:
         plt.figure(figsize=fig_size_all_agents_plot)
@@ -105,11 +116,12 @@ def plotAgentsChanges2D_all(results,saving_switch):
         plt.annotate("+15%", (1.01, 0),annotation_clip=False)
         plt.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
         plt.title("Strategy mix for all agents, payment method: "+payment_method)
-        plt.show()
         if saving_switch == 1:
-            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_"+payment_method+".pdf")
+            plt.savefig(dir_string + "Strategy_mix_for_all_agents_"+payment_method+".pdf")
             plt.savefig(
-                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for all agents_" + payment_method + ".png")
+                dir_string + "Strategy mix for all agents_" + payment_method + ".png")
+        else:
+            plt.show()
 
     #different colors for different agents to check why some agents' payoff is less, with initial and final strategies
     cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
@@ -137,10 +149,11 @@ def plotAgentsChanges2D_all(results,saving_switch):
         fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
         fig.delaxes(axs[2,1])
         if saving_switch == 1:
-            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+"_with initial and final strategies.pdf")
+            plt.savefig(dir_string + "Strategy mix for each agent_"+payment_method+"_with initial and final strategies.pdf")
             plt.savefig(
-                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + "_with initial and final strategies.png")
-        fig.show()
+                dir_string + "Strategy mix for each agents_" + payment_method + "_with initial and final strategies.png")
+        else:
+            fig.show()
 
     #different colors for different agents to check why some agents' payoff is less, withOUT initial and final strategies
     cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
@@ -168,10 +181,11 @@ def plotAgentsChanges2D_all(results,saving_switch):
         fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
         fig.delaxes(axs[2,1])
         if saving_switch == 1:
-            plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+".pdf")
+            plt.savefig(dir_string + "Strategy mix for each agent_"+payment_method+".pdf")
             plt.savefig(
-                "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + ".png")
-        fig.show()
+                dir_string + "Strategy mix for each agents_" + payment_method + ".png")
+        else:
+            fig.show()
 
     #Plotting only the lastest epochs
     '''
@@ -199,10 +213,10 @@ def plotAgentsChanges2D_all(results,saving_switch):
 
     for payment_method in payment_methods:
         plt.figure()
-        for epochs_run in range(experiment_ids):
+        for epochs_run in range(run_ids):
             # to load
             with open ('Results\\agents_'+payment_method+"_"+str(max_epochs)+\
-                       "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'rb') as inp:
+                       "epochs_"+str(auctions_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'rb') as inp:
                 agents = pickle.load(inp)
             #SW_history = pickle.load(inp)
             strategy_mix_history_2D = np.array(
@@ -225,7 +239,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
     plt.show()
 
 
-def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strategy_update, experiment_ids):
+def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, auctions_per_strategy_update, run_ids):
     import scipy.interpolate
     for payment_method in results.index.levels[0]:
         x = [i[0] for i in results.loc[(payment_method),"s_mix_2D"]]
@@ -268,7 +282,9 @@ def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strateg
     ax.plot(x[~inside], y[~inside], 'kx')
     plt.show(block=False)
 '''
-def plotAgentsChanges2D_all_histogram(results):
+def plotAgentsChanges2D_all_histogram(experiment_id, results):
+
+    dir_string = "Results/Experiment_" + experiment_id + "/Plots/"
     from mpl_toolkits.axes_grid1 import make_axes_locatable
 
     for payment_method in results.index.levels[0]:
@@ -322,12 +338,12 @@ def plotAgentsChanges2D_all_histogram(results):
         ax.annotate("+15%", (1.01, 0),annotation_clip=False)
         ax.annotate("PA",(0.5,math.sin(math.pi / 3)+0.03),annotation_clip=False)
         fig.suptitle("Strategy mix for all agents, payment method: "+payment_method)
-        fig.show()
-        #if saving_switch == 1:
-        #    plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\histogram_Strategy mix for all agents_"+payment_method+".pdf")
-        #    plt.savefig(
-        #        "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\histogram_Strategy mix for all agents_" + payment_method + ".png")
-
+        if saving_switch == 1:
+            plt.savefig(dir_string + "histogram_Strategy mix for all agents_"+payment_method+".pdf")
+            plt.savefig(
+                dir_string + "histogram_Strategy mix for all agents_" + payment_method + ".png")
+        else:
+            fig.show()
 
     #different colors for different agents to check why some agents' payoff is less, withOUT initial and final strategies
     cmap_list = [ 'Blues', 'Oranges', 'Greens', 'Reds',"Purples"]
@@ -380,24 +396,19 @@ def plotAgentsChanges2D_all_histogram(results):
             axs[agent_number//2,agent_number%2].set_title("Agent: "+str(agent_number))
         fig.suptitle("Strategy mix for each agent, payment method: "+payment_method)
         fig.delaxes(axs[2,1])
-        #if saving_switch == 1:
-        #    plt.savefig("Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agent_"+payment_method+".pdf")
-        #    plt.savefig(
-        #        "Results\Results_nima_5000epochs_1000RunsPerStrategyUpdate\Plots\Strategy mix for each agents_" + payment_method + ".png")
-        fig.show()
-
-
-def SavingAgents(agents,SW_history, payment_method, max_epochs, runs_per_strategy_update, epochs_run):
-    if not os.path.exists('Results'):
-        os.makedirs('Results')
-    with open ('Results/agents_'+payment_method+"_"+str(max_epochs)+\
-               "epochs_"+str(runs_per_strategy_update)+'runs_EpochsRun'+str(epochs_run)+'.pkl', 'wb') as outp:
-        pickle.dump(agents,outp)
-        pickle.dump(SW_history, outp)
+        if saving_switch == 1:
+            plt.savefig(dir_string + "Strategy mix for each agent_"+payment_method+".pdf")
+            plt.savefig(
+                dir_string + "Strategy mix for each agents_" + payment_method + ".png")
+        else:
+            fig.show()
 
 
 
-def plotSW_all(results_SW):
+
+
+def plotSW_all(experiment_id, results_SW, saving_switch):
+    dir_string = "Results/Experiment_" + experiment_id + "/Plots/"
     #Plotting the average of SW over all the whole-epoch-runs
     results_SW_grouped_mean = results_SW.groupby(level=[0,2])["SW"].mean()
     plt.figure()
@@ -407,7 +418,13 @@ def plotSW_all(results_SW):
     plt.ylabel("SW [SEK]")
     plt.legend()
     plt.title("Average of SW over the runs")
-    plt.show()
+
+    if saving_switch == 1:
+        plt.savefig(dir_string + "Average of SW over the runs.pdf")
+        plt.savefig(
+            dir_string + "Average of SW over the runs.png")
+    else:
+        plt.show()
 """
     # Plotting the SW for each whole-epoch-run
     for epochs_run in results_SW.index.levels[1]:
@@ -421,8 +438,8 @@ def plotSW_all(results_SW):
         plt.show()
 """
 
-def plotPayoffs_all (results):
-
+def plotPayoffs_all(experiment_id, results, saving_switch):
+    dir_string = "Results/Experiment_" + experiment_id + "/Plots/"
     results_grouped_mean = results.groupby(level=[0,2,3])["payoff"].mean()
     plt.figure()
     color_list= ['tab:blue', 'tab:orange','tab:green','tab:red','tab:purple','tab:brown','tab:pink','tab:gray',\
@@ -439,7 +456,13 @@ def plotPayoffs_all (results):
     plt.ylabel("Agents Payoff [SEK]")
     plt.legend()
     plt.title("Average of payoffs over the runs")
-    plt.show()
+
+    if saving_switch == 1:
+        plt.savefig(dir_string + "Average of payoffs over the runs.pdf")
+        plt.savefig(
+            dir_string + "Average of payoffs over the runs.png")
+    else:
+        plt.show()
 
 '''
     for payment_method in results.index.levels[0]:
@@ -499,9 +522,9 @@ def plotSupplyDemand(agents, demand_curve,payment_method):
 __________________________________________________
 
 
-def plotSW(SW_history,runs_per_strategy_update,payment_method):
+def plotSW(SW_history,auctions_per_strategy_update,payment_method):
     np_SW_history = np.array(SW_history)
-    epoch_SW_average = np.average(np_SW_history.reshape(-1, runs_per_strategy_update), axis=1)
+    epoch_SW_average = np.average(np_SW_history.reshape(-1, auctions_per_strategy_update), axis=1)
     plt.figure()
     x = np.array([i for i in range(len(epoch_SW_average))])
     y = epoch_SW_average
@@ -524,10 +547,10 @@ def plotSW(SW_history,runs_per_strategy_update,payment_method):
     plt.title(payment_method)
 
     plt.show()
-def plotPayoffs (agents,payment_method,runs_per_strategy_update):
+def plotPayoffs (agents,payment_method,auctions_per_strategy_update):
     plt.figure()
     for idx, agent in enumerate(agents):
-        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, runs_per_strategy_update), axis=1)
+        epoch_agent_payoff_average = np.average(np.array(agent.payoff_history).reshape(-1, auctions_per_strategy_update), axis=1)
         plt.plot([i for i in range(len(epoch_agent_payoff_average))],epoch_agent_payoff_average, label='agent_' + str(idx))
         plt.xlabel("Epoch")
         plt.ylabel("Payoffs")

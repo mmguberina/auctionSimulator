@@ -13,23 +13,23 @@ import os
 from visualising import *
 
 payment_methods = ["uniform_pricing"]
-runs_per_strategy_update = 1200
+auctions_per_strategy_update = 1200
 max_epochs = 1
 whole_epochs_runs = 10
 n_agents = 5
 
-runs_per_strategy_update_slice = [10, 20, 50, 100, 150, 200, 300, 400, 600]
+auctions_per_strategy_update_slice = [10, 20, 50, 100, 150, 200, 300, 400, 600]
 
 
 
 for payment_method in payment_methods:
     plt.figure()
-    for n in runs_per_strategy_update_slice:
+    for n in auctions_per_strategy_update_slice:
         x = []
         y = []
         for epochs_run in range(whole_epochs_runs):
             with open('Results\\agents_' + payment_method + "_" + str(max_epochs) + \
-                      "epochs_" + str(runs_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
+                      "epochs_" + str(auctions_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
                 agents = pickle.load(inp)
         for agent in agents:
             for i in range(math.floor(len(agent.payoff_history)/n)):
@@ -44,7 +44,7 @@ for payment_method in payment_methods:
     plt.show()
 
 """
-results = pandas_results(n_agents, payment_methods, max_epochs, runs_per_strategy_update, whole_epochs_runs)
+results = pandas_results(n_agents, payment_methods, max_epochs, auctions_per_strategy_update, whole_epochs_runs)
 for payment_method in results.index.levels[0]:
     plt.figure()
     for epochs_run in results.index.levels[1]:

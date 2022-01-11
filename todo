@@ -6,8 +6,9 @@ priority
 2. analyse how truthful they are
 	- in general
 	- per bid that's actually cleared
-3. runs with different demand and/or supply curves
-3. write literature review
+3. run pso for each agent separately
+4. runs with different demand and/or supply curves
+5. write literature review
 
 
 not priority
