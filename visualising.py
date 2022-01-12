@@ -282,7 +282,7 @@ def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, auctions_per_str
     ax.plot(x[~inside], y[~inside], 'kx')
     plt.show(block=False)
 '''
-def plotAgentsChanges2D_all_histogram(experiment_id, results):
+def plotAgentsChanges2D_all_histogram(experiment_id, results, saving_switch):
 
     dir_string = "Results/Experiment_" + experiment_id + "/Plots/"
     from mpl_toolkits.axes_grid1 import make_axes_locatable
