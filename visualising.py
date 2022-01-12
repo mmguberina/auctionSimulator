@@ -330,8 +330,8 @@ def plotAgentsChanges2D_all_histogram(experiment_id, results, saving_switch):
         # ploting the edges of the triangle
         ax.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                  'k')
-        cbar = fig.colorbar(im,ax=ax)
-        cbar.set_label('Epoch^2')
+        #cbar = fig.colorbar(im,ax=ax)
+        #cbar.set_label('Epoch^2')
         ax.set_xlim(-0.1,1.1)
         ax.set_ylim(-0.1,math.sin(math.pi / 3)+0.1)
         ax.annotate("TT",(-0.03,0),annotation_clip=False)
@@ -386,8 +386,8 @@ def plotAgentsChanges2D_all_histogram(experiment_id, results, saving_switch):
             ax_histy.hist(y_histogram, bins=bins_y, orientation='horizontal',color=color_list[agent_number])
             axs[agent_number//2,agent_number%2].plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                      'k')
-            cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
-            cbar.set_label('Epoch^2')
+            #cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
+            #cbar.set_label('Epoch^2')
             axs[agent_number//2,agent_number%2].set_xlim([-0.1, 1.1])
             axs[agent_number//2,agent_number%2].set_ylim([-0.1, math.sin(math.pi / 3) + 0.1])
             axs[agent_number//2,agent_number%2].annotate("TT", (-0.03, 0), annotation_clip=False)
