@@ -19,7 +19,7 @@ parameters_file.close()
 
 experiment_id = parameters.experiment_id
 run_ids = parameters.run_ids
-epochs_run = run_ids[-1]
+#epochs_run = run_ids[-1]
 payment_methods = parameters.payment_methods
 max_epochs = parameters.max_epochs
 auctions_per_strategy_update = parameters.auctions_per_strategy_update
@@ -32,8 +32,7 @@ demand_curve = parameters.demand_curve
 def deviationFromTruth(agent):
     percentage_of_lying_per_bid = []
     for i in range(len(agent.true_evaluation)):
-        #percentage_of_lying_per_bid.append(100 * (1 - agent.true_evaluation[i][1] / agent.bids_curve[i][1]))
-        percentage_of_lying_per_bid.append(1 * (1 - agent.true_evaluation[i][1] / agent.bids_curve[i][1]))
+        percentage_of_lying_per_bid.append(100 * (1 - agent.true_evaluation[i][1] / agent.bids_curve[i][1]))
     return percentage_of_lying_per_bid
 
 
@@ -43,30 +42,30 @@ n_of_auctions = 1000
 results = {payment_method : {'means' : [], 'stds' : []} for payment_method in payment_methods}
 
 for payment_method in payment_methods:
-    with open(dir_string + 'agents_' + payment_method + "_" + str(max_epochs) + \
-              "epochs_" + str(auctions_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
-        agents = pickle.load(inp)
-        SW_history = pickle.load (inp)
-
     agents_percentage_of_lying_per_bid = {i : [] for i in range(n_agents)}
-    for auction_id in range(n_of_auctions):
-        for i, agent in enumerate(agents):
-            agent.generateBid()
-            agents_percentage_of_lying_per_bid[i].append(deviationFromTruth(agent))
+    for epochs_run in run_ids:
+        with open(dir_string + 'agents_' + payment_method + "_" + str(max_epochs) + \
+                  "epochs_" + str(auctions_per_strategy_update) + 'runs_EpochsRun' + str(epochs_run) + '.pkl', 'rb') as inp:
+            agents = pickle.load(inp)
+            SW_history = pickle.load (inp)
 
-        # Market clearing function
-        # supply_bids = [a.bids_curve for a in agents]
-        supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
+        for auction_id in range(n_of_auctions):
+            for i, agent in enumerate(agents):
+                agent.generateBid()
+                agents_percentage_of_lying_per_bid[i].append(deviationFromTruth(agent))
 
-        if payment_method == "uniform_pricing":
-            payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
-        if payment_method == "VCG_nima":
-            payoffs = VCG_nima(agents, demand_curve, supply_quantities_cleared, objective_value)
+            # Market clearing function
+            # supply_bids = [a.bids_curve for a in agents]
+            supply_quantities_cleared, objective_value, uniform_price = marketClearingSciPy(agents, demand_curve)
 
-        for i, agent in enumerate(agents):
+            if payment_method == "uniform_pricing":
+                payoffs = uniformPricing(agents, supply_quantities_cleared, uniform_price)
+            if payment_method == "VCG_nima":
+                payoffs = VCG_nima(agents, demand_curve, supply_quantities_cleared, objective_value)
 
-            if agent.last_strategy == 2:
-                agent.last_adjusting_payoff = payoffs[i]
+            for i, agent in enumerate(agents):
+                if agent.last_strategy == 2:
+                    agent.last_adjusting_payoff = payoffs[i]
 
     for i in agents_percentage_of_lying_per_bid:
         agents_percentage_of_lying_per_bid[i] = np.array(agents_percentage_of_lying_per_bid[i])
@@ -77,23 +76,31 @@ for payment_method in payment_methods:
     results[payment_method]['means'] = np.array(results[payment_method]['means'])
     results[payment_method]['stds'] = np.array(results[payment_method]['stds'])
 
+def plotTruthfulnessAnalysis(yerr_flag):
+    fig, ax = plt.subplots()
+    labels = [str(i) for i in range(n_agents)]
+    x = np.arange(n_agents)
+    rects = []
+    width = 0.35
+    for i, payment_method in enumerate(payment_methods):
+        if yerr_flag:
+            rects.append(ax.bar(x - width/2 + i * width, results[payment_method]['means'],
+                width, yerr=results[payment_method]['stds'], label=payment_method))
+        else:
+            rects.append(ax.bar(x - width/2 + i * width, results[payment_method]['means'],
+                width, label=payment_method))
 
-fig, ax = plt.subplots()
-labels = [str(i) for i in range(n_agents)]
-x = np.arange(n_agents)
-rects = []
-width = 0.35
-for i, payment_method in enumerate(payment_methods):
-    rects.append(ax.bar(x - width/2 + i * width, results[payment_method]['means'],
-        #width, label=payment_method))
-        width, yerr=results[payment_method]['stds'], label=payment_method))
+    ax.set_ylabel('Percentage of deviating from truth')
+    ax.set_title('Average percentage of deviating from truth for every agent')
+    ax.set_xticks(x, labels)
+    ax.legend()
 
-ax.set_ylabel('Percentage of deviating from truth')
-ax.set_title('Average percentage of deviating from truth for every agent')
-ax.set_xticks(x, labels)
-ax.legend()
+    fig.tight_layout()
+    if yerr_flag:
+        plt.savefig("Results/Experiment_" + experiment_id + "/Plots/Truthfulness_final_with_stderr.png")
+    else:
+        plt.savefig("Results/Experiment_" + experiment_id + "/Plots/Truthfulness_final_no_stderr.png")
+#    plt.show()
 
-fig.tight_layout()
-plt.savefig("Results/Experiment_" + experiment_id + "/Plots/Truthfulness_final.png")
-plt.show()
-    
+plotTruthfulnessAnalysis(False)
+plotTruthfulnessAnalysis(True)
