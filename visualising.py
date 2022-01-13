@@ -172,7 +172,7 @@ def plotAgentsChanges2D_all(results,saving_switch):
 
     #Plotting only the lastest epochs
     '''
-    epoch_range = np.arange(4999,5000)
+    epoch_range = np.arange(4900,5000)
     for payment_method in results.index.levels[0]:
         plt.figure()
         for epochs_run in results.index.levels[1]:
@@ -241,8 +241,6 @@ def ContourPlotAgentsChanges2D_all(payment_methods, max_epochs, runs_per_strateg
         astro_smooth = True
     except ImportError as IE:
         astro_smooth = False
-    x = [i[0] for i in results.loc[:,"s_mix_2D"]]
-    y = [i[1] for i in results.loc[:,"s_mix_2D"]]
 
     H, xedges, yedges = np.histogram2d(x, y, bins=(50, 40))
     xmesh, ymesh = np.meshgrid(xedges[:-1], yedges[:-1])
@@ -277,7 +275,7 @@ def plotAgentsChanges2D_all_histogram(results):
                 y = [i[1] for i in slice_pd_df]
                 #plt.scatter(x[0:1], y[0:1],marker="x", label="start", color="r",zorder=4,alpha=0.6)
                 #plt.scatter(x[-1], y[-1],marker="s", label="end", color= "r",zorder=4,alpha=0.6)
-                ax.scatter(x, y,s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
+                im=ax.scatter(x, y,s=1, c=[i for i in range(len(x))], cmap='Blues', alpha=0.6)
                 #plt.scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap='Blues', alpha=0.6)
         slice_pd_df = results.loc[(payment_method),"s_mix_2D"]
         x_histogram = [i[0] for i in slice_pd_df]
@@ -312,7 +310,7 @@ def plotAgentsChanges2D_all_histogram(results):
         ax.plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                  'k')
         cbar = fig.colorbar(im,ax=ax)
-        cbar.set_label('Epoch^2')
+        cbar.set_label('Epoch')
         ax.set_xlim(-0.1,1.1)
         ax.set_ylim(-0.1,math.sin(math.pi / 3)+0.1)
         ax.annotate("TT",(-0.03,0),annotation_clip=False)
@@ -339,7 +337,7 @@ def plotAgentsChanges2D_all_histogram(results):
                 y = [i[1] for i in slice_pd_dff]
                 #axs[agent_number//2,agent_number%2].scatter(x[0:1], y[0:1], marker="x", label="start", color="r",zorder=5)
                 #axs[agent_number//2,agent_number%2].scatter(x[-1], y[-1], marker="s", label="end", color="r",zorder=5)
-                im = axs[agent_number//2,agent_number%2].scatter(x, y, s=1, c=[i**2 for i in range(len(x))], cmap=cmap_list[agent_number], alpha=0.6)
+                im = axs[agent_number//2,agent_number%2].scatter(x, y, s=1, c=[i for i in range(len(x))], cmap=cmap_list[agent_number], alpha=0.6)
                 # plt.plot(x,y,linewidth=1,label='agent ' + str(agent_number), alpha=0.6)
             # ploting the edges of the triangle
             slice_pd_df = results.loc[(payment_method,results.index.levels[1],\
@@ -368,7 +366,7 @@ def plotAgentsChanges2D_all_histogram(results):
             axs[agent_number//2,agent_number%2].plot([0, 1], [0, 0], 'k', [0, 0.5], [0, math.sin(math.pi / 3)], 'k', [1, 0.5], [0, math.sin(math.pi / 3)],
                      'k')
             cbar = fig.colorbar(im,ax=axs[agent_number//2,agent_number%2])
-            cbar.set_label('Epoch^2')
+            cbar.set_label('Epoch')
             axs[agent_number//2,agent_number%2].set_xlim([-0.1, 1.1])
             axs[agent_number//2,agent_number%2].set_ylim([-0.1, math.sin(math.pi / 3) + 0.1])
             axs[agent_number//2,agent_number%2].annotate("TT", (-0.03, 0), annotation_clip=False)

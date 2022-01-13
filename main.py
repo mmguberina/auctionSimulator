@@ -12,27 +12,30 @@ from strategies import *
 from strategy_updating_algorithms import *
 from visualising import *
 
-payment_methods = ["uniform_pricing","VCG_nima"]
+payment_methods = ["Shapley_nima","VCG_nima","uniform_pricing"]
 # Might want to move this to the runs.py file,
-runs_per_strategy_update = 1000  # Example for simple strategies
+runs_per_strategy_update = 2000  # Example for simple strategies
 # (might need other criteria with more complex strategies)
 # define termination criteria
-max_epochs = 5000  # Just for testing with simple termination criteria
-#whole_epochs_runs = np.arange(20,25,1)
-whole_epochs_runs = [0,1,5,6,7,10,11,12,15,16,17,20,21,22]
+max_epochs = 300  # Just for testing with simple termination criteria
+#whole_epochs_runs = np.arange(0,1,1)
+#whole_epochs_runs = [0,1,5,6,7,10,11,12,15,16,17,20,21,22]
+whole_epochs_runs = [0,1,2,3]
 plot_saving_switch = 0
+market_clearing_method = "impact_based"
+# Create demand curve
+# n_of_demand_bids = 5
+# only 1 buyer
+# demand_curve = [[5, (n_of_demand_bids - i)*1.2] for i in range(n_of_demand_bids)]
+# demand_curve[2][1] += 0.01
+n_of_demand_bids = 20
+demand_curve = [[25 / n_of_demand_bids, i] for i in list(np.linspace(5, 1, num=n_of_demand_bids))]
 
 # let's start with the following
 # 1 buyer, static demand curve
 # same form as bid curve
 if __name__ == "__main__":
-    # Create demand curve
-    #n_of_demand_bids = 5
-    # only 1 buyer
-    #demand_curve = [[5, (n_of_demand_bids - i)*1.2] for i in range(n_of_demand_bids)]
-    #demand_curve[2][1] += 0.01
-    n_of_demand_bids = 20
-    demand_curve = [[25/n_of_demand_bids,i] for i in list(np.linspace(5, 1, num = n_of_demand_bids))]
+
 
     for epochs_run in whole_epochs_runs:
         # Initialize agents
@@ -62,18 +65,39 @@ if __name__ == "__main__":
 
                     # Market clearing function
                     # supply_bids = [a.bids_curve for a in agents]
-                    supply_quantities_cleared_solution, demand_quantities_cleared_solution, m = marketClearing(agents,
-                                                                                                               demand_curve)
-                    SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
-                    if payment_method == "uniform_pricing":
-                        uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, \
-                                       epoch, runs_per_strategy_update, run_of_strategy)
-                    if payment_method == "VCG_nima_NoCost":
-                        VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
-                                        runs_per_strategy_update, run_of_strategy)
-                    if payment_method == "VCG_nima":
-                        VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
-                                 runs_per_strategy_update, run_of_strategy)
+                    if market_clearing_method == "impact_based":
+                        supply_quantities_cleared_solution, demand_quantities_cleared_solution, m = marketClearing(agents,
+                                                                                                                   demand_curve)
+                        SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
+                        if payment_method == "uniform_pricing":
+                            uniformPricing(agents, supply_quantities_cleared_solution, demand_quantities_cleared_solution, m, \
+                                           epoch, runs_per_strategy_update, run_of_strategy)
+                        if payment_method == "VCG_nima_NoCost":
+                            VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                            runs_per_strategy_update, run_of_strategy,market_clearing_method)
+                        if payment_method == "VCG_nima":
+                            VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                     runs_per_strategy_update, run_of_strategy, market_clearing_method)
+                        if payment_method == "Shapley_nima":
+                            VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                     runs_per_strategy_update, run_of_strategy, market_clearing_method)
+                    if market_clearing_method == "probability_based":
+                        supply_quantities_cleared_solution, demand_quantities_cleared_solution, m =\
+                            market_clearing_probability_based(agents, demand_curve)
+                        SW_history[runs_per_strategy_update * epoch + run_of_strategy] = copy.deepcopy(m.ObjVal)
+                        #if payment_method == "uniform_pricing":
+                        #    uniformPricing(agents, supply_quantities_cleared_solution,
+                        #                   demand_quantities_cleared_solution, m, \
+                        #                   epoch, runs_per_strategy_update, run_of_strategy)
+                        if payment_method == "VCG_nima_NoCost":
+                            VCG_nima_NoCost(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                            runs_per_strategy_update, run_of_strategy, market_clearing_method)
+                        if payment_method == "VCG_nima":
+                            VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                     runs_per_strategy_update, run_of_strategy, market_clearing_method)
+                        if payment_method == "Shapley_nima":
+                            VCG_nima(agents, demand_curve, m, supply_quantities_cleared_solution, epoch, \
+                                     runs_per_strategy_update, run_of_strategy, market_clearing_method)
                 # Update strategy position
                 for agent in agents:
                     agent.epoch_payoff_history[epoch] = \

@@ -4,9 +4,11 @@ import gurobipy as gp
 from gurobipy import GRB
 import matplotlib.pyplot as plt
 import copy
-
+from math import factorial
 
 from market_clearing import marketClearing
+from market_clearing import market_clearing_probability_based
+from itertools import chain, combinations
 
 """
 take agent contributions and social welfare
@@ -73,7 +75,7 @@ def VCG(agents, demand_curve, m_grand_coalition, cleared_bids_supply):
         agent.payoff_history.append(agent_vcg_payment)
 
 def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
-              runs_per_strategy_update, run_of_strategy):
+              runs_per_strategy_update, run_of_strategy,market_clearing_method):
     SW_grand_coalition = m.ObjVal
 
     payoffs = [0] * len(agents)
@@ -83,7 +85,10 @@ def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch
         #calculating the marginal contribution to the social welfare
         #agents_without_i = copy.deepcopy(agents)
         #del agents_without_i[i]
-        _,_,m_without_i = marketClearing(agents[:i]+agents[i+1:],demand_curve)
+        if market_clearing_method == "impact_based":
+            _,_,m_without_i = marketClearing(agents[:i]+agents[i+1:],demand_curve)
+        elif market_clearing_method == "probability_based":
+            _, _, m_without_i = market_clearing_probability_based(agents[:i] + agents[i + 1:], demand_curve)
         marg_contribution [i] = SW_grand_coalition - m_without_i.ObjVal
         #to calculate the declared cost
         filtered_solution_with_i = list(filter(lambda solution: solution[3] == i, supply_quantities_cleared_solution))
@@ -98,7 +103,8 @@ def VCG_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch
             agent.last_adjusting_payoff = payoffs[i]
 
 def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
-                     runs_per_strategy_update, run_of_strategy):
+                     runs_per_strategy_update, run_of_strategy,market_clearing_method):
+    #!! not speeded up yet like VCG_nima
     SW_grand_coalition = m.ObjVal
 
     payoffs = [0] * len(agents)
@@ -107,7 +113,11 @@ def VCG_nima_NoCost (agents, demand_curve, m, supply_quantities_cleared_solution
         #calculating the marginal contribution to the social welfare
         agents_without_i = copy.deepcopy(agents)
         del agents_without_i[i]
-        _,_,m_without_i = marketClearing(agents_without_i,demand_curve)
+        #del agents_without_i[i]
+        if market_clearing_method == "impact_based":
+            _,_,m_without_i = marketClearing(agents[:i]+agents[i+1:],demand_curve)
+        elif market_clearing_method == "probability_based":
+            _, _, m_without_i = market_clearing_probability_based(agents[:i] + agents[i + 1:], demand_curve)
         marg_contribution [i] = SW_grand_coalition -  m_without_i.ObjVal
         #payoff calculation
         payoffs [i] = marg_contribution[i]
@@ -130,6 +140,66 @@ def uniformPricingOld(model_grand_coalition, x_grand_coalition, bids_demand, bid
     return uniform_price_clearing_results
 
 
+def Shapley_nima (agents, demand_curve, m, supply_quantities_cleared_solution, epoch,\
+              runs_per_strategy_update, run_of_strategy, market_clearing_method):
+    SW_grand_coalition = m.ObjVal
+
+    agents_list = np.arange(len(agents)) #The name of the big players of the game
+    #Find all the subsets of the grand coalition
+    #DSO's ID is "1000"
+    #players_names_in_GrandCoalition = np.append(players_names_in_GrandCoalition,1000)
+    def powerset(iterable):
+        "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+        s = list(iterable)
+        return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+    all_subsets = list(powerset(agents_list))
+
+    payoffs = [0] * len(agents)
+    declared_cost = [0] * len(agents)
+    Shapley_value = {}
+    SW_S = {}
+    for i, agent in enumerate(agents):
+        print("Player: %a" % i)
+        Shapley_value[i] = 0
+        # iterating over all the subsets (S) of the Grand coalition
+        for S in all_subsets:
+            if i in S:
+                coeff = factorial(len(S) - 1 +1) * factorial(len(agents)+1 - (len(S)+1)) / factorial(
+                    len(agents)+1) #+1 because of the DSO
+                # calculating SW for the subset S
+                if market_clearing_method == "impact_based":
+                    _, _, m_S = marketClearing([agents[j] for j in S], demand_curve)
+                elif market_clearing_method == "probability_based":
+                    _, _, m_S = market_clearing_probability_based([agents[j] for j in S], demand_curve)
+                nu_S = m_S.ObjVal
+                SW_S[S] = copy.deepcopy(nu_S)  # save the SW of each coalition to calculated the excess
+
+                # removing player from the subset S to calculate the marginal contribution
+                S_wo_i = list(S)
+                S_wo_i.remove(i)
+
+                if market_clearing_method == "impact_based":
+                    _, _, m_S_wo_i = marketClearing([agents[j] for j in S_wo_i], demand_curve)
+                elif market_clearing_method == "probability_based":
+                    _, _, m_S_wo_i = market_clearing_probability_based([agents[j] for j in S_wo_i], demand_curve)
+                nu_S_wo_i = m_S_wo_i.ObjVal
+
+                Shapley_value[i] += coeff * (nu_S - nu_S_wo_i)
+
+                # to calculate the declared cost
+        filtered_solution_with_i = list(
+            filter(lambda solution: solution[3] == i, supply_quantities_cleared_solution))
+        declared_cost[i] = sum([i_bids[1] * i_bids[2] for i_bids in filtered_solution_with_i])
+        # payoff calculation
+        payoffs[i] = Shapley_value[i] + declared_cost[i]
+
+        #agent.payoff_history.append(payoffs[i])
+        agent.payoff_history[runs_per_strategy_update * epoch + run_of_strategy] = payoffs[i]
+        if agent.last_strategy == 2:
+            agent.last_adjusting_payoff = payoffs[i]
+
+"""
 
 def VCG_OLD(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                 date, cleared_bids_demand, cleared_bids_supply):
@@ -290,7 +360,7 @@ def shapley(model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, 
     return results, results_shapley, excess_S_df
 
 
-"""
+
 #----------------------------Calculating the payments-----------------------
 def payment_allocation_multibid (model_grand_coalition, x_grand_coalition, bids_demand, bids_supply, \
                                  date, cleared_bids_demand, cleared_bids_supply):

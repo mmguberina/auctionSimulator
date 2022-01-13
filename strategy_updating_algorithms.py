@@ -21,7 +21,7 @@ def PSO(agents, epoch_length, epoch):
     # Weight parameters for movement components (dividing by ten to start conservatively)
     swarm_best_weight = random.random()/10
     agent_best_weight = random.random()/10
-    random_movement_weight = random.random()/10
+    random_movement_weight = random.random()/20
 
     # Find top agents (might want to swap to swarm best known including history)
     max_util = max(epoch_utility)

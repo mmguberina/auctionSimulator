@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import pandas as pd
 import gurobipy as gp
@@ -173,7 +175,7 @@ def primal_multibid(bids_demand,bids_supply):
 
 
 def marketClearing(agents, demand_curve):
-
+    random.shuffle(agents)
     m = gp . Model ("CL_activation_primal_multibid")
     m.Params.LogToConsole = 0
     # j: the participant
@@ -229,3 +231,72 @@ def marketClearing(agents, demand_curve):
         # = deman_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount],...]
         demand_quantities_cleared_solution.append(demand_curve[i] + [var.x])
     return supply_quantities_cleared_solution, demand_quantities_cleared_solution, m
+
+
+def market_clearing_probability_based(agents, demand_curve):
+    random.shuffle(agents)
+    m = gp.Model("CL_activation_primal_multibid_binary")
+    m.Params.LogToConsole = 0
+    # j: the participant
+    # t: hour of the day
+    # g: the grandchildren bid, or the granularities of the bids in each hour
+
+    ##########----Defining the variables
+    X_s = []  # how much CL is cleared from each bid x[j,c,t,g] (supply side)
+    X_d = []  # how much CL is cleared from each bid x[j,c,t,g] (demand side)
+    Y_s = []  # how much CL is cleared from each bid x[j,c,t,g] (supply side)
+    Y_d = []  # how much CL is cleared from each bid x[j,c,t,g] (demand side)
+
+    # since there are multiple sellers, their bids need to be indexed so that we
+    # know whose bid a bid is,
+    # meaning allBids = [..., [agent_index, quantity_i, price_i],...]
+    # however, there is only 1 buyer so those bids need not be indexed,
+    # meaning demand = [..., [quantity_i, price_i],...]
+
+    allBids = []
+    for i, agent in enumerate(agents):
+        for j, bid in enumerate(agent.bids_curve):
+            # now bid is [quantity_i, price_i, agent_index]
+            allBids.append(bid + [i])
+            X_s.append(m.addVar(name="x_s_" + str(i) + "_" + str(j)))
+            Y_s.append(m.addVar(name="y_s_" + str(i) + "_" + str(j), vtype=GRB.BINARY))
+            m.addConstr(X_s[-1] <= bid[0] * Y_s[-1], \
+                        name="qs_" + str(i) + "_" + str(j))
+            m.addConstr(Y_s[-1] * sum([b[0] for b in allBids[-(j+1):-1]]) <= sum(X_s[-(j+1):-1]), \
+                        name="ys_" + str(i)+"_"+str(j))
+
+    for i, bid in enumerate(demand_curve):
+        X_d.append(m.addVar(name="x_d_" + str(i)))
+        Y_d.append(m.addVar(name="y_d_" + str(i) , vtype=GRB.BINARY))
+        m.addConstr(X_d[-1] <= bid[0] * Y_d[-1], \
+                    name="qd_" + str(i))
+        m.addConstr(Y_d[-1] * sum([b[0] for b in demand_curve[0:i]]) <= sum(X_d[0:-1]), \
+                    name="yd_" + str(i))
+
+    m.addConstr(gp.quicksum(X_d) \
+                - gp.quicksum(X_s) == 0,
+                "balance_constraint")
+
+    ##########----- Set objective : maximize social welfare
+    obj = gp.quicksum([quantity * demand_curve[i][1] \
+                       for i, quantity in enumerate(X_d)]) \
+          - gp.quicksum([quantity * allBids[i][1] \
+                         for i, quantity in enumerate(X_s)])
+
+    m . setObjective (obj, GRB . MAXIMIZE)
+    m.optimize()
+
+    supply_quantities_cleared_solution = []
+    demand_quantities_cleared_solution = []
+
+    # NOTE FINISH
+    for i, var in enumerate(X_s):
+        # = supply_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount, agent_index],...]
+        supply_quantities_cleared_solution.append(allBids[i][0:2] + [var.x] + [allBids[i][2]])
+
+    for i, var in enumerate(X_d):
+        # = deman_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount],...]
+        demand_quantities_cleared_solution.append(demand_curve[i] + [var.x])
+
+    return supply_quantities_cleared_solution, demand_quantities_cleared_solution, m
+

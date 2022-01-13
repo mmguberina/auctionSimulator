@@ -13,12 +13,12 @@ import os
 from visualising import *
 
 payment_methods = ["uniform_pricing"]
-runs_per_strategy_update = 1200
+runs_per_strategy_update = 2000
 max_epochs = 1
 whole_epochs_runs = 10
 n_agents = 5
 
-runs_per_strategy_update_slice = [10, 20, 50, 100, 150, 200, 300, 400, 600]
+runs_per_strategy_update_slice = np.arange(10,runs_per_strategy_update,50)#[10, 20, 50, 100, 150, 200, 300, 400, 600,800,1000,1200,1400,1600,1800,2000]
 
 
 
@@ -39,8 +39,8 @@ for payment_method in payment_methods:
                 x.append(n)
                 y.append(mean)
         plt.scatter(x,y)
-        plt.xlim(0,650)
-        plt.ylim(4,12)
+        #plt.xlim(0,max(runs_per_strategy_update_slice))
+        #plt.ylim(4,12)
     plt.show()
 
 """
