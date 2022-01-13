@@ -1,22 +1,21 @@
 priority
 ---------
-1. better saving of runs
-	- file with metadata
-	- each experiment in its own folder
 2. analyse how truthful they are
-	- in general
-	- per bid that's actually cleared
-3. run pso for each agent separately
-4. runs with different demand and/or supply curves
+	- in general --- done
+	- per bid that's actually cleared --- not needed
+3. run pso for each agent separately --- can't do that 
+4. runs with different demand and/or supply curves --- maybe
 5. write literature review
+6. compare up and vcg in report
 
 
 not priority
 ------------
 1. save only iterations which happened in epoch
 2. clean up code even more
-3. run with different optimization algorithm, ex ga
+3. convert everything you can to numpy
 
 can't but wish i could
 -----------------------
-1. strategy space is a neural net trained with rl
+1. new optimizations algorithms
+2. strategy space is a neural net trained with rl

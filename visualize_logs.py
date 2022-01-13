@@ -5,6 +5,7 @@ here write functions which generate graphs based on the logs of runs
 from visualising import *
 import pickle
 from collections import namedtuple
+from truthfulness_analysis import *
 
 def savePlotsForExperiment(parameters):
     experiment_id = parameters.experiment_id
@@ -23,6 +24,8 @@ def savePlotsForExperiment(parameters):
     plotSW_all(experiment_id, results_SW, saving_switch)
 
     plotPayoffs_all(experiment_id, results, saving_switch)
+
+    plotTruthfulnessAnalysis(parameters)
 
 
 if __name__ == "__main__":

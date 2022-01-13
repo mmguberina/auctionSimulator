@@ -16,12 +16,14 @@ from strategy_updating_algorithms import *
 from visualising import *
 from os import getpid
 from utils import SavingAgents
+import random
 
 # it's by far the simplest to paralelize over every epoch
 # otherwise updating stuff gets complicated
 
 # put results into the queue when done
-def oneRun(parameters, task_queue, progress_queue):
+def oneRun(parameters, randomStream, task_queue, progress_queue):
+    random.seed(randomStream.uniform() * 10**9)
     print("hello from worker process", getpid(), "! :)")
 
     # map this back to variables for brevity
@@ -35,12 +37,13 @@ def oneRun(parameters, task_queue, progress_queue):
 
     while not task_queue.empty():
         run_id  = task_queue.get()
+        print(getpid(), "working on run", run_id)
 
         # we want to start with the same strategy mixes for each payment method
         init_strategy_mixes = []
         for i in range(n_agents):
             init_strategy_mixes.append(list( # casting as list for proper initialization in agent class
-                np.random.dirichlet(np.ones(len(strategy))/2,size=1)[0]))
+                randomStream.dirichlet(np.ones(len(strategy))/2,size=1)[0]))
 
         for payment_method in payment_methods:
             agents = []
@@ -52,8 +55,6 @@ def oneRun(parameters, task_queue, progress_queue):
 
             epoch = 0
             while epoch < max_epochs:
-                #print("[run_id , payment, epoch]: ", [run_id, payment_method, epoch])
-
                 # Run auctions_per_strategy_update times
                 for run_of_strategy in range(auctions_per_strategy_update):
                     for a in agents:
@@ -85,4 +86,4 @@ def oneRun(parameters, task_queue, progress_queue):
 
             SavingAgents(experiment_id, agents, SW_history, payment_method, max_epochs, auctions_per_strategy_update, run_id, parameters)
             progress_queue.put(run_id)
-    print("process", getpid(), "is done!")
+    print("process", getpid(), "is out!")
