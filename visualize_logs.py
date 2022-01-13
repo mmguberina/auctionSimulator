@@ -18,7 +18,7 @@ def savePlotsForExperiment(parameters):
     # TODO make these work and save themselves as well
     # also, save it in Results/Experiment_experiment_id/Plots
 
-    #plotAgentsChanges2D_all_histogram(results)
+    plotAgentsChanges2D_all_histogram(experiment_id, results, saving_switch)
 
     plotSW_all(experiment_id, results_SW, saving_switch)
 
