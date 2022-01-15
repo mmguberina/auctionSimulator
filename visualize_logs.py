@@ -25,7 +25,8 @@ def savePlotsForExperiment(parameters):
 
     plotPayoffs_all(experiment_id, results, saving_switch)
 
-    plotTruthfulnessAnalysis(parameters)
+    show_plot_flag = False
+    plotTruthfulnessAnalysis(parameters, show_plot_flag)
 
 
 if __name__ == "__main__":

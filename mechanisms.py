@@ -22,7 +22,7 @@ def uniformPricing(agents, supply_quantities_cleared_solution, uniform_price):
     payoffs = [0] * len(agents)
     for solution in supply_quantities_cleared_solution:
 #        print(solution)
-        payoffs[solution[3]] += uniform_price * solution[2]
+        payoffs[solution[3][0]] += uniform_price * solution[2]
 
 # TODO transport this into main, it's code duplication with VCG
     return payoffs
@@ -45,7 +45,7 @@ def VCG_nima(agents, demand_curve, supply_quantities_cleared_solution, objective
 #        print("marg_contribution")
 #        print(marg_contribution)
         #to calculate the declared cost
-        filtered_solution_with_i = list(filter(lambda solution: solution[3] == i, supply_quantities_cleared_solution))
+        filtered_solution_with_i = list(filter(lambda solution: solution[3][0] == i, supply_quantities_cleared_solution))
         declared_cost [i] = sum([i_bids [1]*i_bids [2] for i_bids in filtered_solution_with_i])
 #        print("declared_cost")
 #        print(declared_cost)

@@ -21,9 +21,9 @@ def marketClearingSciPy(agents, demand_curve):
     
     allSellerBids = []
     for i, agent in enumerate(agents):
-        for bid in agent.bids_curve:
-            # now bid is [quantity_i, price_i, agent_index]
-            allSellerBids.append(bid + [i] )
+        for j, bid in enumerate(agent.bids_curve):
+            # now bid is [quantity_i, price_i, [agent_index, bid_index]]
+            allSellerBids.append(bid + [[i, j]] )
 
     # equality constraint is sum sold - bought = 0
     # in matrix form that can be written as a scalar product
@@ -50,7 +50,7 @@ def marketClearingSciPy(agents, demand_curve):
 
     supply_quantities_cleared = []
     for i in range(len(allSellerBids)):
-        # = supply_quantities_cleared_solution = [..., [quantity_i, price_i, cleared_amount, agent_index],...]
+        # = supply_quantities_cleared = [..., [quantity_i, price_i, cleared_amount, [agent_index, bid_index]],...]
         # result.x[i] is ok because the LP was constructed in this order
         supply_quantities_cleared.append(
                 allSellerBids[i][0:2] + [result.x[i]] + [allSellerBids[i][2]])
